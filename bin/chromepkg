@@ -2,7 +2,7 @@
 require_relative '../lib/color'
 
 # Disallow sudo
-abort 'Chromebrew should not be run as root.'.lightred if Process.uid == 0
+abort 'Chromepkg should not be run as root.'.lightred if Process.uid == 0
 
 require 'find'
 require 'net/http'
@@ -19,24 +19,24 @@ require_relative '../lib/util'
 $LOAD_PATH.unshift "#{CREW_LIB_PATH}lib"
 
 DOC = <<DOCOPT
-Chromebrew - Package manager for Chrome OS http://skycocker.github.io/chromebrew/
+Chromepkg - Package manager for Chrome OS
 
 Usage:
-  crew build [options] [-k|--keep] <name> ...
-  crew const [options] [<name> ...]
-  crew deps [options] <name> ...
-  crew download [options] <name> ...
-  crew files [options] <name> ...
-  crew help [<command>]
-  crew install [options] [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] <name> ...
-  crew list [options] (available|installed|compatible|incompatible)
-  crew postinstall [options] <name> ...
-  crew reinstall [options] [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] <name> ...
-  crew remove [options] <name> ...
-  crew search [options] [<name> ...]
-  crew update [options] [<compatible>]
-  crew upgrade [options] [-k|--keep] [-s|--build-from-source] [<name> ...]
-  crew whatprovides [options] <pattern> ...
+  chromepkg build [options] [-k|--keep] <name> ...
+  chromepkg const [options] [<name> ...]
+  chromepkg deps [options] <name> ...
+  chromepkg download [options] <name> ...
+  chromepkg files [options] <name> ...
+  chromepkg help [<command>]
+  chromepkg install [options] [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] <name> ...
+  chromepkg list [options] (available|installed|compatible|incompatible)
+  chromepkg postinstall [options] <name> ...
+  chromepkg reinstall [options] [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] <name> ...
+  chromepkg remove [options] <name> ...
+  chromepkg search [options] [<name> ...]
+  chromepkg update [options] [<compatible>]
+  chromepkg upgrade [options] [-k|--keep] [-s|--build-from-source] [<name> ...]
+  chromepkg whatprovides [options] <pattern> ...
 
   -c --color              Use colors even if standard out is not a tty.
   -d --no-color           Disable colors even if standard out is a tty.
@@ -52,7 +52,7 @@ version #{CREW_VERSION}
 DOCOPT
 
 CREW_LICENSE = <<~LICENSESTRING
-  Copyright (C) 2021 Chromebrew Authors
+  Copyright (C) 2021 Chromepkg Authors
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ CREW_LICENSE = <<~LICENSESTRING
   along with this program. If not, see https://www.gnu.org/licenses/gpl-3.0.html.
 LICENSESTRING
 
-# All available crew commands.
+# All available chromepkg commands.
 @cmds = ["build", "const", "deps", "download", "files", "help", "install", "list", "postinstall", "reinstall", "remove", "search", "update", "upgrade", "whatprovides"]
 
 # Parse arguments using docopt
@@ -308,29 +308,29 @@ def help(pkgName)
   case pkgName
   when "build"
     puts "Build package(s)."
-    puts "Usage: crew build [-k|--keep] [-v|--verbose] <package1> [<package2> ...]"
+    puts "Usage: chromepkg build [-k|--keep] [-v|--verbose] <package1> [<package2> ...]"
     puts "Build package(s) from source and place the archive and checksum in the current working directory."
     puts "If `-k` or `--keep` is present, the `CREW_BREW_DIR` (#{CREW_BREW_DIR}) directory will remain."
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "const"
     puts "Display constant(s)."
-    puts "Usage: crew const [<const1> <const2> ...]"
+    puts "Usage: chromepkg const [<const1> <const2> ...]"
     puts "If no constants are provided, all constants will be displayed."
   when "deps"
     puts "Display dependencies of package(s)."
-    puts "Usage: crew deps <package1> [<package2> ...]"
+    puts "Usage: chromepkg deps <package1> [<package2> ...]"
   when "download"
     puts "Download package(s)."
-    puts "Usage: crew download [-v|--verbose] <package1> [<package2> ...]"
+    puts "Usage: chromepkg download [-v|--verbose] <package1> [<package2> ...]"
     puts "Download package(s) to `CREW_BREW_DIR` (#{CREW_BREW_DIR}), but don't install."
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "files"
     puts "Display installed files of package(s)."
-    puts "Usage: crew files <package1> [<package2> ...]"
+    puts "Usage: chromepkg files <package1> [<package2> ...]"
     puts "The package(s) must be currently installed."
   when "install"
     puts "Install package(s)."
-    puts "Usage: crew install [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] [-v|--verbose] <package1> [<package2> ...]"
+    puts "Usage: chromepkg install [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] [-v|--verbose] <package1> [<package2> ...]"
     puts "The package(s) must have a valid name.  Use `crew search <pattern>` to search for packages to install."
     puts "If `-k` or `--keep` is present, the `CREW_BREW_DIR` (#{CREW_BREW_DIR}) directory will remain."
     puts "If `-s` or `--build-from-source` is present, the package(s) will be compiled instead of installed via binary."
@@ -338,26 +338,26 @@ def help(pkgName)
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "list"
     puts "List packages"
-    puts "Usage: crew list [-v|--verbose] available|installed|compatible|incompatible"
+    puts "Usage: chromepkg list [-v|--verbose] available|installed|compatible|incompatible"
   when "postinstall"
     puts "Display postinstall messages of package(s)."
-    puts "Usage: crew postinstall <package1> [<package2> ...]"
+    puts "Usage: chromepkg postinstall <package1> [<package2> ...]"
     puts "The package(s) must be currently installed."
   when "reinstall"
     puts "Remove and install package(s)."
-    puts "Usage: crew reinstall [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] [-v|--verbose] <package1> [<package2> ...]"
+    puts "Usage: chromepkg reinstall [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] [-v|--verbose] <package1> [<package2> ...]"
     puts "If `-k` or `--keep` is present, the `CREW_BREW_DIR` (#{CREW_BREW_DIR}) directory will remain."
     puts "If `-s` or `--build-from-source` is present, the package(s) will be compiled instead of installed via binary."
     puts "If `-S` or `--recursive-build` is present, the package(s), including all dependencies, will be compiled instead of installed via binary."
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "remove"
     puts "Remove package(s)."
-    puts "Usage: crew remove [-v|--verbose] <package1> [<package2> ...]"
+    puts "Usage: chromepkg remove [-v|--verbose] <package1> [<package2> ...]"
     puts "The package(s) must be currently installed."
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "search"
     puts "Look for package(s)."
-    puts "Usage: crew search [-v|--verbose] [<pattern> ...]"
+    puts "Usage: chromepkg search [-v|--verbose] [<pattern> ...]"
     puts "If <pattern> is omitted, all packages will be returned."
     puts "If the package color is " + "green".lightgreen + ", it means the package is installed."
     puts "If the package color is " + "red".lightred + ", it means the architecture is not supported."
@@ -369,21 +369,21 @@ def help(pkgName)
     puts "  crew search | grep -i audio".lightblue + " will display all packages with `audio` in the name or description."
     puts "  crew search git -v".lightblue + " will display packages with `git` in the name along with homepage, version and license."
   when "update"
-    puts "Update crew."
+    puts "Update chromepkg."
     puts "Usage: crew update"
-    puts "This only updates crew itself.  Use `crew upgrade` to update packages."
-    puts "Usage: crew update compatible"
-    puts "This updates the crew package compatibility list."
+    puts "This only updates chromepkg itself.  Use `chromepkg upgrade` to update packages."
+    puts "Usage: chromepkg update compatible"
+    puts "This updates the chromepkg package compatibility list."
   when "upgrade"
     puts "Update package(s)."
-    puts "Usage: crew upgrade [-v|--verbose] [-s|--build-from-source] <package1> [<package2> ...]"
+    puts "Usage: chromepkg upgrade [-v|--verbose] [-s|--build-from-source] <package1> [<package2> ...]"
     puts "If package(s) are omitted, all packages will be updated.  Otherwise, specific package(s) will be updated."
-    puts "Use `crew update` to update crew itself."
+    puts "Use `chromepkg update` to update crew itself."
     puts "If `-s` or `--build-from-source` is present, the package(s) will be compiled instead of upgraded via binary."
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "whatprovides"
     puts "Determine which package(s) contains file(s)."
-    puts "Usage: crew whatprovides <pattern> ..."
+    puts "Usage: chromepkg whatprovides <pattern> ..."
     puts "The <pattern> is a search string which can contain regular expressions."
   else
     puts "Available commands: #{@cmds.join(', ')}"
