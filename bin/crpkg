@@ -22,21 +22,21 @@ DOC = <<DOCOPT
 Chromepkg - Package manager for Chrome OS
 
 Usage:
-  chromepkg build [options] [-k|--keep] <name> ...
-  chromepkg const [options] [<name> ...]
-  chromepkg deps [options] <name> ...
-  chromepkg download [options] <name> ...
-  chromepkg files [options] <name> ...
-  chromepkg help [<command>]
-  chromepkg install [options] [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] <name> ...
-  chromepkg list [options] (available|installed|compatible|incompatible)
-  chromepkg postinstall [options] <name> ...
-  chromepkg reinstall [options] [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] <name> ...
-  chromepkg remove [options] <name> ...
-  chromepkg search [options] [<name> ...]
-  chromepkg update [options] [<compatible>]
-  chromepkg upgrade [options] [-k|--keep] [-s|--build-from-source] [<name> ...]
-  chromepkg whatprovides [options] <pattern> ...
+  crpkg build [options] [-k|--keep] <name> ...
+  crpkg const [options] [<name> ...]
+  crpkg deps [options] <name> ...
+  crpkg download [options] <name> ...
+  crpkg files [options] <name> ...
+  crpkg help [<command>]
+  crpkg install [options] [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] <name> ...
+  crpkg list [options] (available|installed|compatible|incompatible)
+  crpkg postinstall [options] <name> ...
+  crpkg reinstall [options] [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] <name> ...
+  crpkg remove [options] <name> ...
+  crpkg search [options] [<name> ...]
+  crpkg update [options] [<compatible>]
+  crpkg upgrade [options] [-k|--keep] [-s|--build-from-source] [<name> ...]
+  crpkg whatprovides [options] <pattern> ...
 
   -c --color              Use colors even if standard out is not a tty.
   -d --no-color           Disable colors even if standard out is a tty.
@@ -308,29 +308,29 @@ def help(pkgName)
   case pkgName
   when "build"
     puts "Build package(s)."
-    puts "Usage: chromepkg build [-k|--keep] [-v|--verbose] <package1> [<package2> ...]"
+    puts "Usage: crpkg build [-k|--keep] [-v|--verbose] <package1> [<package2> ...]"
     puts "Build package(s) from source and place the archive and checksum in the current working directory."
     puts "If `-k` or `--keep` is present, the `CREW_BREW_DIR` (#{CREW_BREW_DIR}) directory will remain."
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "const"
     puts "Display constant(s)."
-    puts "Usage: chromepkg const [<const1> <const2> ...]"
+    puts "Usage: crpkg const [<const1> <const2> ...]"
     puts "If no constants are provided, all constants will be displayed."
   when "deps"
     puts "Display dependencies of package(s)."
-    puts "Usage: chromepkg deps <package1> [<package2> ...]"
+    puts "Usage: crpkg deps <package1> [<package2> ...]"
   when "download"
     puts "Download package(s)."
-    puts "Usage: chromepkg download [-v|--verbose] <package1> [<package2> ...]"
+    puts "Usage: crpkg download [-v|--verbose] <package1> [<package2> ...]"
     puts "Download package(s) to `CREW_BREW_DIR` (#{CREW_BREW_DIR}), but don't install."
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "files"
     puts "Display installed files of package(s)."
-    puts "Usage: chromepkg files <package1> [<package2> ...]"
+    puts "Usage: crpkg files <package1> [<package2> ...]"
     puts "The package(s) must be currently installed."
   when "install"
     puts "Install package(s)."
-    puts "Usage: chromepkg install [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] [-v|--verbose] <package1> [<package2> ...]"
+    puts "Usage: crpkg install [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] [-v|--verbose] <package1> [<package2> ...]"
     puts "The package(s) must have a valid name.  Use `crew search <pattern>` to search for packages to install."
     puts "If `-k` or `--keep` is present, the `CREW_BREW_DIR` (#{CREW_BREW_DIR}) directory will remain."
     puts "If `-s` or `--build-from-source` is present, the package(s) will be compiled instead of installed via binary."
@@ -338,52 +338,52 @@ def help(pkgName)
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "list"
     puts "List packages"
-    puts "Usage: chromepkg list [-v|--verbose] available|installed|compatible|incompatible"
+    puts "Usage: crpkg list [-v|--verbose] available|installed|compatible|incompatible"
   when "postinstall"
     puts "Display postinstall messages of package(s)."
     puts "Usage: chromepkg postinstall <package1> [<package2> ...]"
     puts "The package(s) must be currently installed."
   when "reinstall"
     puts "Remove and install package(s)."
-    puts "Usage: chromepkg reinstall [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] [-v|--verbose] <package1> [<package2> ...]"
+    puts "Usage: crpkg reinstall [-k|--keep] [-s|--build-from-source] [-S|--recursive-build] [-v|--verbose] <package1> [<package2> ...]"
     puts "If `-k` or `--keep` is present, the `CREW_BREW_DIR` (#{CREW_BREW_DIR}) directory will remain."
     puts "If `-s` or `--build-from-source` is present, the package(s) will be compiled instead of installed via binary."
     puts "If `-S` or `--recursive-build` is present, the package(s), including all dependencies, will be compiled instead of installed via binary."
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "remove"
     puts "Remove package(s)."
-    puts "Usage: chromepkg remove [-v|--verbose] <package1> [<package2> ...]"
+    puts "Usage: crpkg remove [-v|--verbose] <package1> [<package2> ...]"
     puts "The package(s) must be currently installed."
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "search"
     puts "Look for package(s)."
-    puts "Usage: chromepkg search [-v|--verbose] [<pattern> ...]"
+    puts "Usage: crpkg search [-v|--verbose] [<pattern> ...]"
     puts "If <pattern> is omitted, all packages will be returned."
     puts "If the package color is " + "green".lightgreen + ", it means the package is installed."
     puts "If the package color is " + "red".lightred + ", it means the architecture is not supported."
     puts "The <pattern> string can also contain regular expressions."
     puts "If `-v` or `--verbose` is present, homepage, version and license will be displayed."
     puts "Examples:"
-    puts "  crew search ^lib".lightblue + " will display all packages that start with `lib`."
-    puts "  crew search audio".lightblue + " will display all packages with `audio` in the name."
-    puts "  crew search | grep -i audio".lightblue + " will display all packages with `audio` in the name or description."
-    puts "  crew search git -v".lightblue + " will display packages with `git` in the name along with homepage, version and license."
+    puts "  crpkg search ^lib".lightblue + " will display all packages that start with `lib`."
+    puts "  crpkg search audio".lightblue + " will display all packages with `audio` in the name."
+    puts "  crpkg search | grep -i audio".lightblue + " will display all packages with `audio` in the name or description."
+    puts "  crpkg search git -v".lightblue + " will display packages with `git` in the name along with homepage, version and license."
   when "update"
     puts "Update chromepkg."
-    puts "Usage: crew update"
-    puts "This only updates chromepkg itself.  Use `chromepkg upgrade` to update packages."
-    puts "Usage: chromepkg update compatible"
+    puts "Usage: crpkg update"
+    puts "This only updates chromepkg itself.  Use `crpkg upgrade` to update packages."
+    puts "Usage: crpkg update compatible"
     puts "This updates the chromepkg package compatibility list."
   when "upgrade"
     puts "Update package(s)."
-    puts "Usage: chromepkg upgrade [-v|--verbose] [-s|--build-from-source] <package1> [<package2> ...]"
+    puts "Usage: crpkg upgrade [-v|--verbose] [-s|--build-from-source] <package1> [<package2> ...]"
     puts "If package(s) are omitted, all packages will be updated.  Otherwise, specific package(s) will be updated."
-    puts "Use `chromepkg update` to update crew itself."
+    puts "Use `crpkg update` to update chromepkg itself."
     puts "If `-s` or `--build-from-source` is present, the package(s) will be compiled instead of upgraded via binary."
     puts "If `-v` or `--verbose` is present, extra information will be displayed."
   when "whatprovides"
     puts "Determine which package(s) contains file(s)."
-    puts "Usage: chromepkg whatprovides <pattern> ..."
+    puts "Usage: crpkg whatprovides <pattern> ..."
     puts "The <pattern> is a search string which can contain regular expressions."
   else
     puts "Available commands: #{@cmds.join(', ')}"
@@ -481,7 +481,7 @@ end
 def whatprovides (regexPat)
   # Use grep version command to ascertain whether we have a working grep.
   unless system('grep -V > /dev/null 2>&1')
-    abort 'Grep is not working. Please install it with \'crew install grep\''.lightred
+    abort 'Grep is not working. Please install it with \'crpkg install grep\''.lightred
   end
   fileArray = []
   @grepresults =  %x[grep "#{regexPat}" #{CREW_META_PATH}*.filelist].chomp.gsub('.filelist','').gsub(':',': ').gsub(CREW_META_PATH,'').split(/$/).map(&:strip)
@@ -495,11 +495,11 @@ def whatprovides (regexPat)
 end
 
 def update
-  abort "'crew update' is used to update crew itself. Use 'crew upgrade <package1> [<package2> ...]' to update specific packages.".orange if @pkgName
+  abort "'crpkg update' is used to update chromepkg itself. Use 'crpkg upgrade <package1> [<package2> ...]' to update specific packages.".orange if @pkgName
   #update package lists
   Dir.chdir CREW_LIB_PATH do
     if CREW_TESTING == '1'
-      puts "Updating crew from testing repository..."
+      puts "Updating crpkg from testing repository..."
       system "git remote add testing #{CREW_TESTING_REPO} 2>/dev/null || \
         git remote set-url testing #{CREW_TESTING_REPO}"
       system "git fetch testing #{CREW_TESTING_BRANCH}"
@@ -510,7 +510,7 @@ def update
     end
   end
 
-  puts 'Package lists, crew, and library updated.'
+  puts 'Package lists, crpkg, and library updated.'
 
   #update compatible packages
   generate_compatible
@@ -528,7 +528,7 @@ def update
 
   if canBeUpdated > 0
     puts
-    puts "Run `crew upgrade` to update all packages or `crew upgrade <package1> [<package2> ...]` to update specific packages."
+    puts "Run `crpkg upgrade` to update all packages or `crpkg upgrade <package1> [<package2> ...]` to update specific packages."
   else
     puts "Your software is up to date.".lightgreen
   end
@@ -641,7 +641,7 @@ def download
         puts "Looking for #{@pkg.name} archive in cache".orange if @opt_verbose
         cachefile = CREW_CACHE_DIR + filename
         if ! File.exist?(cachefile)
-          puts 'Cannot find cached archive. 😔 Will download.'.lightred
+          puts 'Cannot find cached archive. :( Will download.'.lightred
           cachefile = ''
         else
           puts "#{@pkg.name.capitalize} archive file exists in cache".lightgreen if @opt_verbose
@@ -658,14 +658,14 @@ def download
             puts "Archive found in cache".lightgreen
             return {source: source, filename: filename}
           else
-            puts 'Cached archive checksum mismatch. 😔 Will download.'.lightred
+            puts 'Cached archive checksum mismatch. :( Will download.'.lightred
             cachefile = ''
           end
         end
       end
       # Download file if not cached.
       system "#{CURL} --retry 3 -#{@verbose}#LC - --insecure \'#{url}\' --output #{filename}"
-      abort 'Checksum mismatch. 😔 Try again.'.lightred unless
+      abort 'Checksum mismatch. :( Try again.'.lightred unless
         Digest::SHA256.hexdigest( File.read(filename) ) == sha256sum || sha256sum =~ /^SKIP$/i
       puts "#{@pkg.name.capitalize} archive downloaded.".lightgreen
       # Stow file in cache if requested, if file is not from cache,
@@ -709,10 +709,10 @@ def download
             system "tar x#{@verbose}f #{cachefile} -C #{@extract_dir}"
             return {source: source, filename: filename}
           else
-            puts 'Cached git repository checksum mismatch. 😔 Will download.'.lightred
+            puts 'Cached Git repository checksum mismatch. :( Will download.'.lightred
           end
         else
-          puts 'Cannot find cached git repository. 😔 Will download.'.lightred
+          puts 'Cannot find cached Git repository. :( Will download.'.lightred
         end
       end
       # Download via git
@@ -724,7 +724,7 @@ def download
         system "git remote add origin #{@pkg.source_url}", exception: true
         unless @pkg.git_branch.nil? || @pkg.git_branch.empty?
           # Leave a message because this step can be slow.
-          puts "Downloading src from a git branch. This may take a while..."
+          puts "Downloading src from a Git branch. This may take a while..."
           system "git remote set-branches origin #{@pkg.git_branch}", exception: true
           system "git fetch --progress origin #{@pkg.git_branch}", exception: true
           system "git checkout #{@pkg.git_hashtag}", exception: true
@@ -737,7 +737,7 @@ def download
       end
       # Stow file in cache if requested and cache is writable.
       if CREW_CACHE_ENABLED and File.writable?(CREW_CACHE_DIR)
-        puts 'Caching downloaded git repo...'
+        puts 'Caching downloaded Git repo...'
         Dir.chdir "#{@extract_dir}" do
           system "tar c#{@verbose}Jf #{cachefile} \
             $(find -mindepth 1 -maxdepth 1 -printf '%P\n')"
@@ -784,7 +784,7 @@ def unpack(meta)
       end
     when /\.tpxz$/i
       unless File.exist?("#{CREW_PREFIX}/bin/pixz")
-        abort 'Pixz is needed for this install. Please install it with \'crew install pixz\''.lightred
+        abort 'Pixz is needed for this install. Please install it with \'crpkg install pixz\''.lightred
       end
       puts "Unpacking 'tpxz' archive using 'tar', this may take a while..."
       system "tar -Ipixz -x#{@verbose}f #{meta[:filename]} -C #{@extract_dir}", exception: true
@@ -1145,7 +1145,7 @@ def resolve_dependencies
   end
 
   puts
-  print 'Do you agree? [Y/n] '
+  print 'Do you want to continue? [Y/n] '
   response = STDIN.getc
   case response
   when 'n'
@@ -1445,7 +1445,7 @@ def postinstall_command(args)
     if @device[:installed_packages].any? do |elem| elem[:name] == @pkgName end
       @pkg.postinstall
     else
-      puts "Package #{@pkgName} is not installed. :(".lightred
+      puts "bash: crew: package #{@pkgName} is not installed".lightred
     end
   end
 end
