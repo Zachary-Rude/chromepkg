@@ -61,12 +61,12 @@ On a rooted Google OnHub, the command needs to be run with the "chronos" user. I
 Help
 ----
 
-Please check out the [wiki](https://github.com/Zachary-Rude/chromepkg/wiki) to find out more information about Chromebrew including helpful tips, resource links and frequently asked questions. Also please check existing [issues](https://github.com/Zachary-Rude/chromepkg/issues) before submitting a new one.
+Please check out the [wiki](https://github.com/Zachary-Rude/chromepkg/wiki) to find out more information about Chromepkg including helpful tips, resource links and frequently asked questions. Also please check existing [issues](https://github.com/Zachary-Rude/chromepkg/issues) before submitting a new one.
 
 Usage
 -----
 
-    chromepkg <command> [-k|--keep] <package1> [<package2> ...]
+    crpkg <command> [-k|--keep] <package1> [<package2> ...]
 
 Where available commands are:
 
@@ -92,7 +92,7 @@ Available packages are listed in the [packages directory](https://github.com/Zac
 
 Chromepkg will wipe its `BREW_DIR` (`/usr/local/tmp/chromepkg` by default) after installation unless you pass `-k` or `--keep` when running `chromepkg install`.
 
-    chromepkg install --keep <package1> [<package2> ...]
+    crpkg install --keep <package1> [<package2> ...]
 
 Recently Upgraded Packages
 --------------------------
