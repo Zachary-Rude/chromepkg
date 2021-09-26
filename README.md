@@ -46,7 +46,7 @@ If this command returns `ERROR: unknown command: shell`, please have a second lo
 
 Then download and run the installation script below:
 
-    curl -Ls git.io/JE2ba | bash
+    curl -Ls https://git.io/JzMFm | bash
 
 On a rooted Google OnHub, the command needs to be run with the "chronos" user. In order to make su work, a password is needed for the chronos user.
 
@@ -56,7 +56,7 @@ On a rooted Google OnHub, the command needs to be run with the "chronos" user. I
     Retype new UNIX password:
     # su - chronos
     Password:
-    $ curl -Ls git.io/JE2ba | bash
+    $ curl -Ls https://git.io/JzMFm | bash
 
 Help
 ----
