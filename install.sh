@@ -4,14 +4,14 @@
 set -e
 
 #chromebrew directories
-OWNER="${OWNER:-skycocker}"
-REPO="${REPO:-chromebrew}"
+OWNER="${OWNER:-Zachary-Rude}"
+REPO="${REPO:-chromepkg}"
 BRANCH="${BRANCH:-master}"
 URL="https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}"
 CREW_PREFIX="${CREW_PREFIX:-/usr/local}"
-CREW_LIB_PATH="${CREW_PREFIX}/lib/crew"
-CREW_CONFIG_PATH="${CREW_PREFIX}/etc/crew"
-CREW_BREW_DIR="${CREW_PREFIX}/tmp/crew"
+CREW_LIB_PATH="${CREW_PREFIX}/lib/crpkg"
+CREW_CONFIG_PATH="${CREW_PREFIX}/etc/crpkg"
+CREW_BREW_DIR="${CREW_PREFIX}/tmp/crpkg"
 CREW_DEST_DIR="${CREW_BREW_DIR}/dest"
 CREW_PACKAGES_PATH="${CREW_LIB_PATH}/packages"
 CURL="${CURL:-curl}"
@@ -239,7 +239,7 @@ export LD_LIBRARY_PATH=$(crew const CREW_LIB_PREFIX | sed -e 's:CREW_LIB_PREFIX=
 # Since we just ran git, just update package compatibility information.
 crew update compatible
 
-echo -e "${YELLOW}Installing core Chromebrew packages...${RESET}\n"
+echo -e "${YELLOW}Installing core Chromepkg packages...${RESET}\n"
 yes | crew install core
 
 echo -e "\n${YELLOW}Running Bootstrap package postinstall scripts...${RESET}\n"
@@ -247,7 +247,7 @@ crew postinstall $BOOTSTRAP_PACKAGES
 
 if [[ "${CREW_PREFIX}" != "/usr/local" ]]; then
   echo -e "\n${YELLOW}
-Since you have installed Chromebrew in a directory other than '/usr/local',
+Since you have installed Chromepkg in a directory other than '/usr/local',
 you need to run these commands to complete your installation:
 ${RESET}"
 
@@ -264,7 +264,7 @@ more is used by default
 
 You may wish to edit the ${CREW_PREFIX}/etc/env.d/01-editor file for an editor default.
 
-Chromebrew provides nano, vim and emacs as default TUI editor options.
+Chromepkg provides Nano, Vim and Emacs as default TUI editor options.
 
 ${RESET}"
-echo -e "${GREEN}Chromebrew installed successfully and package lists updated.${RESET}"
+echo -e "${GREEN}Chromepkg installed successfully and package lists updated.${RESET}"
