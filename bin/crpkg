@@ -570,7 +570,7 @@ def upgrade
     # Check version number of installed package and make a target list
     toBeUpdated = []
     dependencies.each do |dep|
-      package = @device[:installed_packages].find {|PKG| PKG[:name] == dep}
+      package = @device[:installed_packages].find {|pkg| pkg[:name] == dep}
       next unless package
       search package[:name], true
       if package[:version] != @pkg.version
@@ -579,14 +579,14 @@ def upgrade
     end
 
     # Adjust package install ordering for upgrades.
-    CREW_FIRST_PACKAGES.each do |PKG|
+    CREW_FIRST_PACKAGES.each do |pkg|
       # Add package to beginning.
-      toBeUpdated.insert(0,toBeUpdated.delete(PKG)) if toBeUpdated.include? PKG
+      toBeUpdated.insert(0,toBeUpdated.delete(pkg)) if toBeUpdated.include? pkg
     end
-    CREW_LAST_PACKAGES.each do |PKG|
-      if toBeUpdated.include? PKG
+    CREW_LAST_PACKAGES.each do |pkg|
+      if toBeUpdated.include? pkg
         # Add package to beginning.
-        toBeUpdated.insert(0,toBeUpdated.delete(PKG))
+        toBeUpdated.insert(0,toBeUpdated.delete(pkg))
         # Now rotate first package to last package.
         toBeUpdated=toBeUpdated.rotate(1)
       end
@@ -1075,7 +1075,7 @@ end
 def expand_dependencies
   def push_dependencies
     if @pkg.is_binary?(@device[:architecture]) ||
-      (!@pkg.in_upgrade && !@pkg.build_from_source && @device[:installed_packages].any? { |PKG| PKG[:name] == @pkg.name })
+      (!@pkg.in_upgrade && !@pkg.build_from_source && @device[:installed_packages].any? { |pkg| pkg[:name] == @pkg.name })
       # retrieve name of dependencies that doesn't contain :build tag
       check_deps = @pkg.dependencies.select {|k, v| !v.include?(:build)}.map {|k, v| k}
     else
@@ -1101,15 +1101,15 @@ def resolve_dependencies
   @dependencies = []
   if @pkg.build_from_source
     # make sure all buildessential packages are installed
-    PKGname = @pkg.name
+    pkgname = @pkg.name
     search 'buildessential', true
     expand_dependencies
-    search PKGname, true
+    search pkgname, true
   end
   expand_dependencies
 
   # leave only not installed packages in dependencies
-  @dependencies.select! {|name| @device[:installed_packages].none? {|PKG| PKG[:name] == name}}
+  @dependencies.select! {|name| @device[:installed_packages].none? {|pkg| pkg[:name] == name}}
 
   return if @dependencies.empty?
 
@@ -1176,7 +1176,7 @@ def resolve_dependencies
 end
 
 def install
-  if !@pkg.in_upgrade && @device[:installed_packages].any? { |PKG| PKG[:name] == @pkg.name }
+  if !@pkg.in_upgrade && @device[:installed_packages].any? { |pkg| pkg[:name] == @pkg.name }
     puts "Package #{@pkg.name} already installed, skipping...".lightgreen
     return
   end
@@ -1290,24 +1290,24 @@ end
 def archive_package(pwd)
   unless CREW_USE_PIXZ == '0' || !File.exist?("#{CREW_PREFIX}/bin/pixz")
     puts "Using pixz to compress archive."
-    PKG_name = "#{@pkg.name}-#{@pkg.version}-chromeos-#{@device[:architecture]}.tpxz"
+    pkg_name = "#{@pkg.name}-#{@pkg.version}-chromeos-#{@device[:architecture]}.tpxz"
     Dir.chdir CREW_DEST_DIR do
       # Use smaller blocks with "-f0.25" to make random access faster.
-      system "tar c#{@verbose} * | pixz -f0.25 -9 > #{pwd}/#{PKG_name}"
+      system "tar c#{@verbose} * | pixz -f0.25 -9 > #{pwd}/#{pkg_name}"
     end
   else
-    PKG_name = "#{@pkg.name}-#{@pkg.version}-chromeos-#{@device[:architecture]}.tar.xz"
+    pkg_name = "#{@pkg.name}-#{@pkg.version}-chromeos-#{@device[:architecture]}.tar.xz"
     Dir.chdir CREW_DEST_DIR do
-      system "tar c#{@verbose}Jf #{pwd}/#{PKG_name} *"
+      system "tar c#{@verbose}Jf #{pwd}/#{pkg_name} *"
     end
   end
-  system "sha256sum #{pwd}/#{PKG_name} > #{pwd}/#{PKG_name}.sha256"
+  system "sha256sum #{pwd}/#{pkg_name} > #{pwd}/#{pkg_name}.sha256"
 end
 
 def remove(pkgName)
 
   #make sure the package is actually installed
-  unless @device[:installed_packages].any? { |PKG| PKG[:name] == pkgName } || File.exist?("#{CREW_META_PATH}#{pkgName}.filelist")
+  unless @device[:installed_packages].any? { |pkg| pkg[:name] == pkgName } || File.exist?("#{CREW_META_PATH}#{pkgName}.filelist")
     puts "Package #{pkgName} isn't installed.".lightred
     return
   end
