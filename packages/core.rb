@@ -1,8 +1,8 @@
 require 'package'
 
 class Core < Package
-  description 'Core Chromebrew Packages.'
-  homepage 'https://github.com/skycocker/chromebrew'
+  description 'Core ChromePKG Packages.'
+  homepage 'https://github.com/Zachary-Rude/chromepkg'
   version '1.2'
   license 'GPL-3+'
   compatibility 'all'
