@@ -3,7 +3,7 @@
 # exit on fail
 set -e
 
-#chromebrew directories
+#chromepkg directories
 OWNER="${OWNER:-Zachary-Rude}"
 REPO="${REPO:-chromepkg}"
 BRANCH="${BRANCH:-master}"
@@ -46,7 +46,7 @@ case "${ARCH}" in
   [ "${ARCH}" == "x86_64" ] && LIB_SUFFIX='64'
   ;;
 *)
-  echo -e "${RED}Your device is not supported by ChromePKG yet :/${RESET}"
+  echo -e "${RED}Your device is not supported by ChromePKG yet${RESET}"
   exit 1;;
 esac
 
@@ -202,9 +202,9 @@ done
 
 ## workaround https://github.com/skycocker/chromebrew/issues/3305
 sudo ldconfig &> /dev/null || true
-echo -e "\n${YELLOW}Creating symlink to 'crew' in ${CREW_PREFIX}/bin/${RESET}"
+echo -e "\n${YELLOW}Creating symlink to 'crpkg' in ${CREW_PREFIX}/bin/${RESET}"
 echo -e "${GRAY}"
-ln -sfv "../lib/crew/bin/crew" "${CREW_PREFIX}/bin/"
+ln -sfv "../lib/crpkg/bin/crpkg" "${CREW_PREFIX}/bin/"
 echo -e "${RESET}"
 
 echo -e "${YELLOW}Setup and synchronize local package repo...${RESET}"
@@ -237,13 +237,13 @@ echo -e "${YELLOW}Updating crpkg package information...${RESET}\n"
 # from not being able to find the gdbm library.
 export LD_LIBRARY_PATH=$(crew const CREW_LIB_PREFIX | sed -e 's:CREW_LIB_PREFIX=::g')
 # Since we just ran git, just update package compatibility information.
-crew update compatible
+crpkg update compatible
 
 echo -e "${YELLOW}Installing core ChromePKG packages...${RESET}\n"
-yes | crew install core
+yes | crpkg install core
 
 echo -e "\n${YELLOW}Running Bootstrap package postinstall scripts...${RESET}\n"
-crew postinstall $BOOTSTRAP_PACKAGES
+crpkg postinstall $BOOTSTRAP_PACKAGES
 
 if [[ "${CREW_PREFIX}" != "/usr/local" ]]; then
   echo -e "\n${YELLOW}
@@ -258,6 +258,7 @@ echo 'export LD_LIBRARY_PATH=${CREW_PREFIX}/lib${LIB_SUFFIX}' >> ~/.bashrc
 source ~/.bashrc
 ${RESET}"
 fi
+export PATH="${CREW_PREFIX}/bin:${CREW_PREFIX}/sbin:${PATH}"
 echo -e "${BLUE}
 Edit ${CREW_PREFIX}/etc/env.d/02-pager to change the default PAGER.
 more is used by default
