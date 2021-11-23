@@ -500,10 +500,10 @@ def update
   Dir.chdir CREW_LIB_PATH do
     if CREW_TESTING == '1'
       puts "Updating crpkg from testing repository..."
-      system "git remote add testing #{CREW_TESTING_REPO} 2>/dev/null || \
-        git remote set-url testing #{CREW_TESTING_REPO}"
-      system "git fetch testing #{CREW_TESTING_BRANCH}"
-      system "git reset --hard testing/#{CREW_TESTING_BRANCH}"
+      system "git remote add testing https://github.com/Zachary-Rude/chromepkg 2>/dev/null || \
+        git remote set-url testing https://github.com/Zachary-Rude/chromepkg"
+      system "git fetch testing https://github.com/Zachary-Rude/chromepkg master"
+      system "git reset --hard testing/https://github.com/Zachary-Rude/chromepkg master"
     else
       system 'git fetch origin master'
       system 'git reset --hard origin/master'
