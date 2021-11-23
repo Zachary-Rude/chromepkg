@@ -34,9 +34,9 @@ GRAY='\e[1;37m';   # Use Gray for program output.
 MAGENTA='\e[1;35m';
 RESET='\e[0m'
 
-echo -e "${GREEN}Welcome to Chromebrew!${RESET}\n"
+echo -e "${GREEN}Welcome to ChromePKG!${RESET}\n"
 if [ "${EUID}" == "0" ]; then
-  echo -e "${RED}Chromebrew should not be installed or run as root.${RESET}"
+  echo -e "${RED}ChromePKG should not be installed or run as root.${RESET}"
   exit 1;
 fi
 
@@ -46,7 +46,7 @@ case "${ARCH}" in
   [ "${ARCH}" == "x86_64" ] && LIB_SUFFIX='64'
   ;;
 *)
-  echo -e "${RED}Your device is not supported by Chromebrew yet :/${RESET}"
+  echo -e "${RED}Your device is not supported by ChromePKG yet :/${RESET}"
   exit 1;;
 esac
 
@@ -232,14 +232,14 @@ git sparse-checkout set packages lib bin crew tools install.sh
 git reset --hard origin/"${BRANCH}"
 echo -e "${RESET}"
 
-echo -e "${YELLOW}Updating crew package information...${RESET}\n"
+echo -e "${YELLOW}Updating crpkg package information...${RESET}\n"
 # Without setting LD_LIBRARY_PATH, the mandb postinstall fails
 # from not being able to find the gdbm library.
 export LD_LIBRARY_PATH=$(crew const CREW_LIB_PREFIX | sed -e 's:CREW_LIB_PREFIX=::g')
 # Since we just ran git, just update package compatibility information.
 crew update compatible
 
-echo -e "${YELLOW}Installing core Chromepkg packages...${RESET}\n"
+echo -e "${YELLOW}Installing core ChromePKG packages...${RESET}\n"
 yes | crew install core
 
 echo -e "\n${YELLOW}Running Bootstrap package postinstall scripts...${RESET}\n"
@@ -247,7 +247,7 @@ crew postinstall $BOOTSTRAP_PACKAGES
 
 if [[ "${CREW_PREFIX}" != "/usr/local" ]]; then
   echo -e "\n${YELLOW}
-Since you have installed Chromepkg in a directory other than '/usr/local',
+Since you have installed ChromePKG in a directory other than '/usr/local',
 you need to run these commands to complete your installation:
 ${RESET}"
 
@@ -264,7 +264,7 @@ more is used by default
 
 You may wish to edit the ${CREW_PREFIX}/etc/env.d/01-editor file for an editor default.
 
-Chromepkg provides Nano, Vim and Emacs as default TUI editor options.
+ChromePKG provides Nano, Vim and Emacs as default TUI editor options.
 
 ${RESET}"
-echo -e "${GREEN}Chromepkg installed successfully and package lists updated.${RESET}"
+echo -e "${GREEN}ChromePKG installed successfully and package lists updated.${RESET}"
