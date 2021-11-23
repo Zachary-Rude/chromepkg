@@ -11,7 +11,7 @@
 #             if the script aborts on a previous attempt.
 #
 # Search for required commands
-cmds="crew git"
+cmds="crpkg git"
 for c in $cmds; do
   command -v $c > /dev/null && continue || { echo "$c command not found."; exit 1; }
 done
@@ -19,7 +19,7 @@ done
 # Determine if a packages directory exists from the cloned repository
 packages_dir=$(echo $(git rev-parse --git-dir 2> /dev/null) | sed -e 's,.git,packages,')
 if [ ! -d "$packages_dir" ]; then
-  echo "Not a valid Chromebrew repository."
+  echo "Not a valid ChromePKG repository."
   exit 1
 fi
 
@@ -87,7 +87,7 @@ for p in $packages; do
     # Build only if necessary
     if test $continue; then
       if ! test $exclude; then
-        crew build $p
+        crpkg build $p
       fi
     fi
   fi
