@@ -140,13 +140,13 @@ def print_current_package(extra = false)
   status = 'incompatible' unless @device[:compatible_packages].any? do |elem| elem[:name] == @pkg.name end
   case status
   when 'installed'
-    print @pkg.name.lightgreen
+    puts @pkg.name.lightgreen
   when 'incompatible'
-    print @pkg.name.lightred
+    puts @pkg.name.lightred
   else
-    print @pkg.name.lightblue
+    puts @pkg.name.lightblue
   end
-  print ": #{@pkg.description}".lightblue if @pkg.description
+  print "Description: #{@pkg.description}".lightblue if @pkg.description
   if extra
     puts ""
     puts @pkg.homepage if @pkg.homepage
@@ -1113,7 +1113,7 @@ def resolve_dependencies
 
   return if @dependencies.empty?
 
-  puts 'The following packages also need to be installed: '
+  puts 'The following additional packages need to be installed: '
 
   deps = @dependencies
   # populate arrays with common elements
