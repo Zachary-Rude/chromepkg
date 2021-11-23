@@ -90,7 +90,7 @@ Where available commands are:
 
 Available packages are listed in the [packages directory](https://github.com/Zachary-Rude/chromepkg/tree/master/packages).
 
-Chromepkg will wipe its `BREW_DIR` (`/usr/local/tmp/chromepkg` by default) after installation unless you pass `-k` or `--keep` when running `chromepkg install`.
+Chromepkg will wipe its `BREW_DIR` (`/usr/local/tmp/crpkg` by default) after installation unless you pass `-k` or `--keep` when running `crpkg install`.
 
     crpkg install --keep <package1> [<package2> ...]
 
