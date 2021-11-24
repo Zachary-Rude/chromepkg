@@ -70,8 +70,8 @@ CREW_NOT_STRIP = ENV['CREW_NOT_STRIP']
 CREW_SHRINK_ARCHIVE = ENV['CREW_SHRINK_ARCHIVE']
 
 # Set testing constants from environment variables
-crew_testing_repo = ENV['CREW_TESTING_REPO']
-crew_testing_branch = ENV['CREW_TESTING_BRANCH']
+crew_testing_repo = "https://github.com/Zachary-Rude/chromepkg.git"
+crew_testing_branch = "https://github.com/Zachary-Rude/chromepkg.git master"
 crew_testing = ENV['CREW_TESTING']
 crew_testing = '0' if crew_testing_repo.nil? || crew_testing_repo.empty?
 crew_testing = '0' if crew_testing_branch.nil? || crew_testing_branch.empty?
