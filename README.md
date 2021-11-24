@@ -2,7 +2,7 @@
 
 <h1 align="center">Chromepkg</h1>
 
-<p align="center">Package manager for Chrome OS</p>
+<p align="center">The missing package manager for ChromeBooks</p>
 
 Overview
 --------
@@ -115,6 +115,7 @@ Latest Packages
 
 | Name | Description | Date Added |
 |:---|:---|:---|
+| crew | Chromebrew is a package manager for Chromebooks. | 2021-11-24 |
 | apktool | A tool for reverse engineering Android apk files | 2021-08-20 |
 | teams | Microsoft Teams - Meet, chat, call, and collaborate in just one place. | 2021-08-15 |
 | github_desktop | GitHub Desktop is an open source Electron-based GitHub app | 2021-08-15 |
