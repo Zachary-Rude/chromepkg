@@ -2,13 +2,11 @@
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="shortcut icon" href="images/brew-title.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The missing package manager for Chrome OS">
-    <meta name="author" content="Michal Siwek">
-    <link rel="shortcut icon" href="https://skycocker.github.io/chromebrew/favicon.png">
+    <meta name="description" content="The missing package manager for ChromeBooks">
+    <meta name="author" content="Zachary Rude">
 
-    <title>Chromebrew - the software source you missed so much</title>
+    <title>ChromePKG - the missing package manager for ChromeBooks</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/jumbotron-narrow.css" rel="stylesheet">
@@ -26,55 +24,52 @@
     <div class="container">
      
 <ul>
-          <a href="https://github.com/skycocker/chromebrew"><img class="forkme" src="images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+          <a href="https://github.com/Zachary-Rude/chromepkg"><img class="forkme" src="images/forkme_right_red_6d6d6d.png" alt="Fork me on GitHub"></a>
         </ul>
       
 
       <div class="jumbotron">
-        <div class="center">
-          <img src="images/brew.png" alt="centered image">
-        </div>
-        <h1>Chromebrew</h1>
-        <p class="lead">The missing package manager for Chrome OS</p>
+        <h1>ChromePKG</h1>
+        <p class="lead">The missing package manager for ChromeBooks</p>
       </div>
 
       <div class="row marketing">
         <div class="col-12">
           <div class="bs-example bs-example-type">
-            <h4>Chromebrew installs what you need with its dependencies:</h4>
+            <h4>ChromePKG installs what you need with its dependencies:</h4>
           </div>
           <div class="highlight">
-            <pre><code>$ crew install vim</code></pre>
+            <pre><code>$ crpkg install vim</code></pre>
           </div>
           <div class="bs-example bs-example-type">
             <h4>It also registers the changes being made, so you can easily remove anything:</h4>
           </div>
           <div class="highlight">
-            <pre><code>$ crew remove vim</code></pre>
+            <pre><code>$ crpkg remove vim</code></pre>
           </div>
           <div class="bs-example bs-example-type">
             <h4>See which packages are currently available:</h4>
           </div>
           <div class="highlight">
-            <pre><code>$ crew search</code></pre>
+            <pre><code>$ crpkg search</code></pre>
           </div>
           <div class="bs-example bs-example-type">
             <h4>Look for a package:</h4>
           </div>
           <div class="highlight">
-            <pre><code>$ crew search vim</code></pre>
+            <pre><code>$ crpkg search vim</code></pre>
           </div>
           <div class="bs-example bs-example-type">
             <h4>Update software lists:</h4>
           </div>
           <div class="highlight">
-            <pre><code>$ crew update</code></pre>
+            <pre><code>$ crpkg update</code></pre>
           </div>
           <div class="bs-example bs-example-type">
-            <h4>Update Chromebrew packages:</h4>
+            <h4>Update ChromePKG packages:</h4>
           </div>
           <div class="highlight">
-            <pre><code>$ crew upgrade</code></pre>
+            <pre><code>$ crpkg upgrade</code></pre>
           </div>
         </div>
       </div>
@@ -82,39 +77,39 @@
       <div class="row marketing">
         <div class="col-12">
           <div class="bs-example bs-example-type">
-            <h4>Install Chromebrew (along with Ruby and Git).</h4>
+            <h4>Install ChromePKG (along with Ruby and Git).</h4>
             <h5>Available on aarch64, armv7l, i686 and x86_64.</h5>
           </div>
           <div class="highlight">
-            <pre><code>curl -Ls git.io/vddgY | bash</code></pre>
+            <pre><code>curl -Ls https://git.io/JzMFm | bash</code></pre>
           </div>
         </div>
       </div>
 
       <div class="row marketing">
         <h3>What is it?</h3>
-        <p>Chromebrew is an <a href="https://github.com/skycocker/chromebrew/blob/master/LICENSE">open source</a> package manager / source builder hybrid targeting Chromebooks and Chrome OS.</p>
+        <p>ChromePKG is an <a href="https://github.com/Zachary-Rude/chromepkg/blob/master/LICENSE">open source</a> package manager / source builder hybrid targeting Chromebooks and Chrome OS.</p>
 
         <h3>What does it do?</h3>
         <p>
-          It installs the software you need that hasn't been provided by Google. Many important packages are already precompiled and it's enough to just type <code>crew install package_name</code>, but if something's not already there, you can easily build and install it from source.
+          It installs the software you need that hasn't been provided by Google. Many important packages are already precompiled and it's enough to just type <code>crpkg install package_name</code>, but if something's not already there, you can easily build and install it from source.
         </p>
 
         <h3>How does it work?</h3>
         <p>
-          In fact, Chromebrew is a simple Ruby script. There's also some Git involved, so we needed both of these things to run it on a bare Chrome OS. We have prebuilt them along with their dependencies to install into your system during installation. So, basically, after installing Chromebrew, you will have fully functional Ruby with Rubygems, Git and a package manager dedicated just for your Chromebook. Cool, huh?
+          In fact, ChromePKG is a simple Ruby script. There's also some Git involved, so we needed both of these things to run it on a bare Chrome OS. We have prebuilt them along with their dependencies to install into your system during installation. So, basically, after installing ChromePKG, you will have fully functional Ruby with Rubygems, Git and a package manager dedicated just for your Chromebook. Cool, huh?
         </p>
 
-        <h3>How is it different from Crouton/Linux (Beta)?</h3>
+        <h3>How is it different from Crouton/Crostini?</h3>
         <p>
-          Well, Chromebrew doesn't install an operating system. :p
+          Well, ChromePKG doesn't install an operating system. :p
         </p>
         <p>
           The idea is that you may be on a weak internet connection and cannot download too much data, but you don't have Crouton and need just a few small packages. Also, you may be on a good internet connection and need just a few small packages. Also, why not use Chrome OS as the operating system?
         </p>
 <h3>Is GUI supported?</h3>
 <p>
-  Chromebrew supports most GUI apps with help from the sommelier daemon. We don't support i686 architecture, due to Google dropping support.
+  ChromePKG supports most GUI apps with help from the sommelier daemon. We don't support i686 architecture, due to Google dropping support.
 </p>
         <h3 id="howcanihelp">How can I help?</h3>
         <p>
@@ -194,10 +189,12 @@ class Template &lt; Package
 end
 </pre>
         <p></p>
-      
-      <div class="footer">
-        <pre>© 2013-2021 Michal Siwek</pre>
-      </div>
+      <hr>
+      <footer>
+        <p>
+          © 2021 Zach, Inc.
+        </p>
+      </footer>
     </div> <!-- /container -->
   
 
