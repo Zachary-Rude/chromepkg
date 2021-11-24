@@ -1,6 +1,6 @@
 # Defines common constants used in different parts of crpkg
 
-CREW_VERSION = '1.16.7'
+CREW_VERSION = '1.16.8'
 
 ARCH_ACTUAL = `uname -m`.strip
 # This helps with virtualized builds on aarch64 machines
@@ -27,11 +27,11 @@ end
 
 CREW_LIB_PREFIX = CREW_PREFIX + '/' + ARCH_LIB
 CREW_MAN_PREFIX = CREW_PREFIX + '/share/man'
-CREW_LIB_PATH = CREW_PREFIX + '/lib/crew/'
+CREW_LIB_PATH = CREW_PREFIX + '/lib/crpkg/'
 CREW_PACKAGES_PATH = CREW_LIB_PATH + 'packages/'
-CREW_CONFIG_PATH = CREW_PREFIX + '/etc/crew/'
+CREW_CONFIG_PATH = CREW_PREFIX + '/etc/crpkg/'
 CREW_META_PATH = CREW_CONFIG_PATH + 'meta/'
-CREW_BREW_DIR = CREW_PREFIX + '/tmp/crew/'
+CREW_BREW_DIR = CREW_PREFIX + '/tmp/crpkg/'
 CREW_DEST_DIR = CREW_BREW_DIR + 'dest'
 CREW_DEST_PREFIX = CREW_DEST_DIR + CREW_PREFIX
 CREW_DEST_LIB_PREFIX = CREW_DEST_DIR + CREW_LIB_PREFIX
