@@ -1,13 +1,13 @@
 <p align="center"><img src="https://www.google.com/chrome/static/images/chrome-logo.svg" alt="Chrome logo" /></p>
 
-<h1 align="center">Chromepkg</h1>
+<h1 align="center">ChromePKG</h1>
 
 <p align="center">The missing package manager for ChromeBooks</p>
 
 Overview
 --------
 
-Chromebooks with Chrome OS run a Linux kernel. The only missing pieces to use them as full-featured Linux distro are GCC and Make with their dependencies. Well, these pieces aren't missing anymore. Say hello to Chromepkg!
+Chromebooks with Chrome OS run a Linux kernel. The only missing pieces to use them as full-featured Linux distro are GCC and Make with their dependencies. Well, these pieces aren't missing anymore. Say hello to ChromePKG!
 
 Prerequisites
 -------------
@@ -37,8 +37,8 @@ Supported Systems
 Installation
 ------------
 
-The beta, dev, and Canary channels are ***not*** supported and should ***not*** be used with Chromepkg.
-Failure to take notice of this will cause major issues with your Chromepkg installation.
+The beta, dev, and Canary channels are ***not*** supported and should ***not*** be used with ChromePKG.
+Failure to take notice of this will cause major issues with your ChromePKG installation.
 
 Open Crosh with Ctrl+Alt+T and type `shell`.
 
@@ -61,7 +61,7 @@ On a rooted Google OnHub, the command needs to be run with the "chronos" user. I
 Help
 ----
 
-Please check out the [wiki](https://github.com/Zachary-Rude/chromepkg/wiki) to find out more information about Chromepkg including helpful tips, resource links and frequently asked questions. Also please check existing [issues](https://github.com/Zachary-Rude/chromepkg/issues) before submitting a new one.
+Please check out the [wiki](https://github.com/Zachary-Rude/chromepkg/wiki) to find out more information about ChromePKG including helpful tips, resource links and frequently asked questions. Also please check existing [issues](https://github.com/Zachary-Rude/chromepkg/issues) before submitting a new one.
 
 Usage
 -----
@@ -74,8 +74,7 @@ Where available commands are:
 |:---|:---|
 | build | build package(s) from source and store the archive and checksum in the current working directory |
 | const | display constant(s) |
-| deps | display dependencies of package(s) |
-| download | download package(s) to CREW_BREW_DIR (/usr/local/tmp/crew by default), but don't install |
+| download | download package(s) to CREW_BREW_DIR (/usr/local/tmp/crpkg by default), but don't install |
 | files | display installed files of package(s) |
 | help | get information about command usage |
 | install | install package(s) along with dependencies after prompting for confirmation |
@@ -84,13 +83,13 @@ Where available commands are:
 | reinstall | remove and install package(s) |
 | remove | remove package(s) |
 | search | look for package(s) |
-| update | update crew itself |
+| update | update crpkg itself |
 | upgrade | update all or specific package(s) |
 | whatprovides | regex search for package(s) that contains file(s) |
 
 Available packages are listed in the [packages directory](https://github.com/Zachary-Rude/chromepkg/tree/master/packages).
 
-Chromepkg will wipe its `BREW_DIR` (`/usr/local/tmp/crpkg` by default) after installation unless you pass `-k` or `--keep` when running `crpkg install`.
+ChromePKG will wipe its `BREW_DIR` (`/usr/local/tmp/crpkg` by default) after installation unless you pass `-k` or `--keep` when running `crpkg install`.
 
     crpkg install --keep <package1> [<package2> ...]
 
