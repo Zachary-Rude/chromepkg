@@ -1,7 +1,7 @@
 require 'package'
 
-class Gcc7 < Package
-  description 'The GNU Compiler Collection includes front ends for C, C++, Objective-C, Fortran, Ada, and Go.'
+class Gcc < Package
+  description 'The GNU Compiler Collection (GCC) includes front ends for C, C++, Objective-C, Fortran, Ada, and Go.'
   homepage 'https://www.gnu.org/software/gcc/'
   version '7.4.0-1'
   license 'GPL-3'
