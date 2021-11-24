@@ -21,7 +21,6 @@ ChromePKG - Package manager for Chrome OS
 Usage:
   crpkg build [options] [-k|--keep] <name> ...
   crpkg const [options] [<name> ...]
-  crpkg deps [options] <name> ...
   crpkg download [options] <name> ...
   crpkg files [options] <name> ...
   crpkg help [<command>]
@@ -65,7 +64,7 @@ CREW_LICENSE = <<~LICENSESTRING
 LICENSESTRING
 
 # All available ChromePKG commands.
-@cmds = ["build", "const", "deps", "download", "files", "help", "install", "list", "postinstall", "reinstall", "remove", "search", "update", "upgrade", "whatprovides"]
+@cmds = ["build", "const", "download", "files", "help", "install", "list", "postinstall", "reinstall", "remove", "search", "update", "upgrade", "whatprovides"]
 
 # Parse arguments using docopt
 require_relative '../lib/docopt'
@@ -314,8 +313,7 @@ def help(pkgName)
     puts "Usage: crpkg const [<const1> <const2> ...]"
     puts "If no constants are provided, all constants will be displayed."
   when "deps"
-    puts "Display dependencies of package(s)."
-    puts "Usage: crpkg deps <package1> [<package2> ...]"
+    puts "The 'deps' command has been removed."
   when "download"
     puts "Download package(s)."
     puts "Usage: crpkg download [-v|--verbose] <package1> [<package2> ...]"
@@ -1376,14 +1374,7 @@ def const_command(args)
 end
 
 def deps_command(args)
-  args["<name>"].each do |name|
-    @dependencies = []
-    @pkgName = name
-    search @pkgName
-    print_current_package
-    expand_dependencies
-    puts @dependencies
-  end
+  puts "The 'deps' command has been removed."
 end
 
 def download_command(args)
