@@ -235,7 +235,7 @@ echo -e "${RESET}"
 echo -e "${YELLOW}Updating crpkg package information...${RESET}\n"
 # Without setting LD_LIBRARY_PATH, the mandb postinstall fails
 # from not being able to find the gdbm library.
-export LD_LIBRARY_PATH=$(crew const CREW_LIB_PREFIX | sed -e 's:CREW_LIB_PREFIX=::g')
+export LD_LIBRARY_PATH=$(crpkg const CREW_LIB_PREFIX | sed -e 's:CREW_LIB_PREFIX=::g')
 # Since we just ran git, just update package compatibility information.
 crpkg update compatible
 
