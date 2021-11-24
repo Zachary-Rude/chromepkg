@@ -82,14 +82,18 @@ rescue Docopt::Exit => e
       exit 0
     end
     if ARGV[0] != '-h' and ARGV[0] != '--help' then
-      puts "Could not understand \"crpkg #{ARGV.join(' ')}\".".lightred
-      # Looking for similar commands
-      if not @cmds.include?(ARGV[0]) then
-        similar = @cmds.select {|word| edit_distance(ARGV[0], word) < 4}
-        if not similar.empty? then
-          puts 'Did you mean?'
-          similar.each {|sug| puts "  #{sug}"}
+      if ARGV[0] != 'deps' then
+        puts "Could not understand \"crpkg #{ARGV.join(' ')}\".".lightred
+        # Looking for similar commands
+        if not @cmds.include?(ARGV[0]) then
+          similar = @cmds.select {|word| edit_distance(ARGV[0], word) < 4}
+          if not similar.empty? then
+            puts 'Did you mean?'
+            similar.each {|sug| puts "  #{sug}"}
+          end
         end
+      else
+        puts "The 'deps' command has been removed.".lightred
       end
     end
   end
@@ -313,7 +317,7 @@ def help(pkgName)
     puts "Usage: crpkg const [<const1> <const2> ...]"
     puts "If no constants are provided, all constants will be displayed."
   when "deps"
-    puts "The 'deps' command has been removed."
+    puts "The 'deps' command has been removed.".lightred
   when "download"
     puts "Download package(s)."
     puts "Usage: crpkg download [-v|--verbose] <package1> [<package2> ...]"
