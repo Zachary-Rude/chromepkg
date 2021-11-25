@@ -115,7 +115,7 @@
         If you have a compatible Chromebook, you can fork my Github repo and add new packages to the <code>packages</code> directory if you managed to build them from source successfully on your device. Package recipes are simple Ruby files - here is an example:
       </p>
       <pre># It is recommended that you investigate other files in the 'packages/' directory
-# to help get an idea of how existing packages are being installed through Chromebrew.
+# to help get an idea of how existing packages are being installed through ChromePKG.
 
 require 'package'
 
@@ -179,7 +179,7 @@ class Template &lt; Package
 
 
   # Function to perform check from source build.
-  # This is execute if and only if `crew build`.
+  # This is execute if and only if `crpkg build`.
   def self.check
 
   end
