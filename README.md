@@ -98,6 +98,7 @@ Recently Upgraded Packages
 
 | Name | Description | Date Upgraded | Version |
 |:---|:---|:---|:---|
+| node | As an asynchronous event driven JavaScript runtime, Node is designed to build scalable network applications. | 2021-11-24 | 16.13.0 |
 | atom | The hackable text editor | 2021-08-21 | 1.58.0-1 |
 | vulkan_icd_loader | Vulkan Installable Client Driver ICD Loader | 2021-08-20 | 1.2.189 |
 | vulkan_headers | Vulkan header files | 2021-08-20 | 1.2.189 |
