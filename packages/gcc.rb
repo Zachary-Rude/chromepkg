@@ -36,7 +36,7 @@ class Gcc < Package
   depends_on 'isl'
   depends_on 'cloog'
   depends_on 'glibc'
-  depents_on 'libiconv'
+  depends_on 'libiconv'
 
   def self.preinstall
     gccver = `gcc -v 2>&1 | tail -1 | cut -d' ' -f3`.chomp
