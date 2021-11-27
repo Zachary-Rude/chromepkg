@@ -140,16 +140,16 @@ def print_current_package(extra = false)
   status = 'incompatible' unless @device[:compatible_packages].any? do |elem| elem[:name] == @pkg.name end
   case status
   when 'installed'
-    puts @pkg.name.lightgreen
+    puts "Name: #{@pkg.name}".lightgreen
   when 'incompatible'
-    puts @pkg.name.lightred
+    puts "Name: #{@pkg.name}".lightred
   else
-    puts @pkg.name.lightblue
+    puts "Name: #{@pkg.name}".lightblue
   end
   print "Description: #{@pkg.description}".lightblue if @pkg.description
   if extra
     puts ""
-    puts @pkg.homepage if @pkg.homepage
+    puts "Homepage: #{@pkg.homepage}" if @pkg.homepage
     puts "Version: #{@pkg.version}"
     print "License: #{@pkg.license}" if @pkg.license
   end
@@ -279,7 +279,7 @@ def search (pkgName, silent = false)
   rescue => e
     puts "Error with #{pkgName}.rb: #{e}".red unless e.to_s.include?('uninitialized constant')
   end
-  abort "Package #{pkgName} not found".lightred unless silent
+  abort "crpkg: #{pkgName}: package not found".lightred unless silent
 end
 
 def regexp_search(pkgPat)
@@ -301,7 +301,7 @@ def regexp_search(pkgPat)
       end
     end
   end
-  abort "Package #{pkgPat} not found.".lightred if results.empty?
+  abort "crpkg: #{pkgPat}: package not found".lightred if results.empty?
 end
 
 def help(pkgName)
@@ -907,9 +907,9 @@ def prepare_package(destdir)
       next if filename == '.' or filename == '..'
       unless @fhs_compliant_prefix.include?(filename)
         if CREW_FHS_NONCOMPLIANCE_ONLY_ADVISORY == '1'
-          puts "Warning: #{CREW_PREFIX}/#{filename} in #{@pkg.name} is not FHS3 compliant.".orange
+          puts "crpkg: warning: #{CREW_PREFIX}/#{filename} in #{@pkg.name} is not FHS3 compliant.".orange
         else
-          puts "Error: #{CREW_PREFIX}/#{filename} in #{@pkg.name} is not FHS3 compliant.".lightred
+          puts "crpkg: error: #{CREW_PREFIX}/#{filename} in #{@pkg.name} is not FHS3 compliant".lightred
           @_errors = 1
         end
       end
@@ -925,9 +925,9 @@ def prepare_package(destdir)
     conflicts.reject!(&:empty?)
     unless conflicts.empty?
       if CREW_CONFLICTS_ONLY_ADVISORY == '1'
-        puts "Warning: There is a conflict with the same file in another package.".orange
+        puts "crpkg: warning: There is a conflict with the same file in another package.".orange
       else
-        puts "Error: There is a conflict with the same file in another package.".lightred
+        puts "crpkg: error: There is a conflict with the same file in another package.".lightred
         @_errors = 1
       end
       pp = ''
@@ -1095,7 +1095,7 @@ def expand_dependencies
 end
 
 def resolve_dependencies
-  abort "Package #{@pkg.name} is not compatible with your device architecture (#{ARCH})".lightred unless @device[:compatible_packages].any? do |elem| elem[:name] == @pkg.name end
+  abort "crpkg: #{@pkg.name}: package not compatible with your device architecture (#{ARCH})".lightred unless @device[:compatible_packages].any? do |elem| elem[:name] == @pkg.name end
 
   @dependencies = []
   if @pkg.build_from_source
@@ -1307,7 +1307,7 @@ def remove(pkgName)
 
   #make sure the package is actually installed
   unless @device[:installed_packages].any? { |pkg| pkg[:name] == pkgName } || File.exist?("#{CREW_META_PATH}#{pkgName}.filelist")
-    puts "Package #{pkgName} isn't installed.".lightred
+    puts "crpkg: #{pkgName}: package not installed".lightred
     return
   end
 
@@ -1437,7 +1437,7 @@ def postinstall_command(args)
     if @device[:installed_packages].any? do |elem| elem[:name] == @pkgName end
       @pkg.postinstall
     else
-      puts "bash: crpkg: package #{@pkgName} is not installed".lightred
+      puts "crpkg: #{@pkgName}: package not installed".lightred
     end
   end
 end
