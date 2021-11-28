@@ -473,7 +473,7 @@ def files (pkgName)
     puts "Total found: #{lines}".lightgreen
     puts "Disk usage: #{humansize}".lightgreen
   else
-    puts "Package #{pkgName} is not installed.".lightred
+    puts "crpkg: #{pkgName} :package not installed".lightred
   end
 end
 
@@ -925,9 +925,9 @@ def prepare_package(destdir)
     conflicts.reject!(&:empty?)
     unless conflicts.empty?
       if CREW_CONFLICTS_ONLY_ADVISORY == '1'
-        puts "crpkg: warning: There is a conflict with the same file in another package.".orange
+        puts "crpkg: warning: There is a conflict with the same file in another package".orange
       else
-        puts "crpkg: error: There is a conflict with the same file in another package.".lightred
+        puts "crpkg: error: There is a conflict with the same file in another package".lightred
         @_errors = 1
       end
       pp = ''
