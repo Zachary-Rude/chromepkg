@@ -1,182 +1,348 @@
 require 'package'
+require 'open3'
 
 class Gcc < Package
   description 'The GNU Compiler Collection includes front ends for C, C++, Objective-C, Fortran, Ada, and Go.'
   homepage 'https://www.gnu.org/software/gcc/'
-  version '8.3.0'
-  license 'GPL-3'
+  version '11.1.0-2'
+  license 'GPL-3, LGPL-3, libgcc, FDL-1.2'
   compatibility 'all'
-  source_url 'https://ftpmirror.gnu.org/gcc/gcc-8.3.0/gcc-8.3.0.tar.xz'
-  source_sha256 '64baadfe6cc0f4947a84cb12d7f0dfaf45bb58b7e92461639596c21e02d97d2c'
+  source_url 'https://ftpmirror.gnu.org/gcc/gcc-11.1.0/gcc-11.1.0.tar.xz'
+  source_sha256 '4c4a6fb8a8396059241c2e674b85b351c26a5d678274007f076957afa1cc9ddf'
 
-  binary_url ({
-    aarch64: 'https://gitlab.com/api/v4/projects/26210301/packages/generic/gcc8/8.3.0_armv7l/gcc8-8.3.0-chromeos-armv7l.tar.xz',
-     armv7l: 'https://gitlab.com/api/v4/projects/26210301/packages/generic/gcc8/8.3.0_armv7l/gcc8-8.3.0-chromeos-armv7l.tar.xz',
-       i686: 'https://gitlab.com/api/v4/projects/26210301/packages/generic/gcc8/8.3.0_i686/gcc8-8.3.0-chromeos-i686.tar.xz',
-     x86_64: 'https://gitlab.com/api/v4/projects/26210301/packages/generic/gcc8/8.3.0_x86_64/gcc8-8.3.0-chromeos-x86_64.tar.xz',
+  binary_url({
+    aarch64: 'https://gitlab.com/api/v4/projects/26210301/packages/generic/gcc11/11.1.0-2_armv7l/gcc11-11.1.0-2-chromeos-armv7l.tpxz',
+     armv7l: 'https://gitlab.com/api/v4/projects/26210301/packages/generic/gcc11/11.1.0-2_armv7l/gcc11-11.1.0-2-chromeos-armv7l.tpxz',
+       i686: 'https://gitlab.com/api/v4/projects/26210301/packages/generic/gcc11/11.1.0-2_i686/gcc11-11.1.0-2-chromeos-i686.tpxz',
+     x86_64: 'https://gitlab.com/api/v4/projects/26210301/packages/generic/gcc11/11.1.0-2_x86_64/gcc11-11.1.0-2-chromeos-x86_64.tpxz'
   })
-  binary_sha256 ({
-    aarch64: 'fbd8a589befb3d10400af6e4975d02a6940bab4907628f8fc0d6913ea89f70ae',
-     armv7l: 'fbd8a589befb3d10400af6e4975d02a6940bab4907628f8fc0d6913ea89f70ae',
-       i686: '4d625e92969fde16c1a92601740e22c07331f8056452edf7cf0bf2c1c88aa152',
-     x86_64: 'ae8c8c33e4090f7fdbd39b2364754dcfc5f6bdd9a74062fde3eeb6272562f48b',
+  binary_sha256({
+    aarch64: '5a245c4d158cc0c10fc7468d3fdc09cb5e38dd6a23646ceb658dce887c908dca',
+     armv7l: '5a245c4d158cc0c10fc7468d3fdc09cb5e38dd6a23646ceb658dce887c908dca',
+       i686: '9c1e13720a102c62bd0794e4872e9936d73c6c3bcb2934854c32798090035021',
+     x86_64: '91ed0f513618b8d548928d256e68219046c5dcf6726b79f1d71979e0ae5d64dc'
   })
 
-  depends_on 'unzip' => :build
-  depends_on 'mawk' => :build
+  depends_on 'ccache' => :build
   depends_on 'dejagnu' => :build # for test
-  depends_on 'icu4c' => :build
-  depends_on 'python2' => :build
-  depends_on 'python3' => :build
-
-  depends_on 'binutils'
-  depends_on 'gmp'
-  depends_on 'mpfr'
-  depends_on 'mpc'
-  depends_on 'isl'
-  depends_on 'cloog'
-  depends_on 'glibc'
+  # depends_on 'hashpipe' => :build
+  depends_on 'glibc' # R
+  depends_on 'gmp' # R
+  depends_on 'isl' # R
+  depends_on 'mpc' # R
+  depends_on 'mpfr' # R
+  depends_on 'libssp' # L
   depends_on 'libiconv'
 
-  def self.preinstall
-    gccver = `gcc -v 2>&1 | tail -1 | cut -d' ' -f3`.chomp
-    abort "GCC version #{gccver} already installed.".lightgreen unless "#{gccver}" == "No" || "#{gccver}" == "not" || "#{gccver}" == "gcc:" || "#{gccver}" == "#{version}"
+  @gcc_version = version.split('-')[0].partition('.')[0]
+
+  @gcc_global_opts = '--disable-bootstrap \
+  --disable-libmpx \
+  --disable-libssp \
+  --disable-multilib \
+  --disable-werror \
+  --enable-cet=auto \
+  --enable-checking=release \
+  --enable-clocale=gnu \
+  --enable-default-pie \
+  --enable-default-ssp \
+  --enable-gnu-indirect-function \
+  --enable-gnu-unique-object \
+  --enable-host-shared \
+  --enable-lto \
+  --enable-plugin \
+  --enable-shared \
+  --enable-symvers \
+  --enable-static \
+  --enable-threads=posix \
+  --with-gcc-major-version-only \
+  --with-gmp \
+  --with-isl \
+  --with-mpc \
+  --with-mpfr \
+  --with-pic \
+  --with-system-libunwind \
+  --with-system-zlib'
+
+  @cflags = '-fPIC -pipe'
+  @cxxflags = '-fPIC -pipe'
+  @languages = 'c,c++,jit,objc,fortran,go'
+  case ARCH
+  when 'armv7l', 'aarch64'
+    @archflags = '--with-arch=armv7-a --with-float=hard --with-fpu=neon --with-tune=cortex-a15'
+  when 'x86_64'
+    @archflags = '--with-arch-64=x86-64'
+  when 'i686'
+    @archflags = '--with-arch-32=i686'
+  end
+
+  def self.preflight
+    # Use full gcc path to bypass ccache
+    stdout_and_stderr, status = Open3.capture2e('bash', '-c',
+                                                "#{CREW_PREFIX}/bin/gcc -dumpversion 2>&1 | tail -1 | cut -d' ' -f1")
+    if status.success?
+      installed_gccver = stdout_and_stderr.chomp
+      # One gets "-dumpversion" or "bash:" with no gcc installed.
+      unless installed_gccver.to_s == '-dumpversion' ||
+             installed_gccver.to_s == 'bash:' ||
+             installed_gccver.to_s == @gcc_version.to_s ||
+             installed_gccver.partition('.')[0].to_s == @gcc_version.partition('.')[0].to_s
+        $stderr.puts "GCC version #{installed_gccver} is currently installed.".lightred
+        $stderr.puts "To use #{self.to_s.downcase} please run:".lightgreen
+        $stderr.puts "crew remove gcc#{installed_gccver} && crew install #{self.to_s.downcase}".lightgreen
+        exit 1
+      end
+    end
   end
 
   def self.patch
-    # See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=86724#c4.
-    system "sed -i '40i#include <isl/id.h>' gcc/graphite.h"
-    system "sed -i '41i#include <isl/space.h>' gcc/graphite.h"
+    # This fixes a PATH_MAX undefined error which breaks libsanitizer
+    # "libsanitizer/asan/asan_linux.cpp:217:21: error: ‘PATH_MAX’ was not declared in this scope"
+    # This is defined in https://chromium.googlesource.com/chromiumos/third_party/kernel/+/refs/heads/chromeos-5.4/include/uapi/linux/limits.h
+    # and is defined as per suggested method here: https://github.com/ZefengWang/cross-tool-chain-build
+    # The following is due to sed not passing newlines right.
+    system "grep  -q 4096 libsanitizer/asan/asan_linux.cpp || (sed -i '77a #endif' libsanitizer/asan/asan_linux.cpp &&
+    sed -i '77a #define PATH_MAX 4096' libsanitizer/asan/asan_linux.cpp &&
+    sed -i '77a #ifndef PATH_MAX' libsanitizer/asan/asan_linux.cpp)"
   end
 
   def self.build
-    # previous compile issue
-    # /usr/local/bin/ld: cannot find crti.o: No such file or directory
-    # /usr/local/bin/ld: cannot find /usr/lib64/libc_nonshared.a
-    ENV["LIBRARY_PATH"] = "#{CREW_LIB_PREFIX}"   # fix x86_64 issues
-    system "mkdir -p objdir"
-    Dir.chdir("objdir") do
-      case ARCH
-        when 'armv7l', 'aarch64'
-          system "../configure",
-                 "--prefix=#{CREW_PREFIX}",
-                 "--libdir=#{CREW_LIB_PREFIX}",
-                 "--build=armv7l-cros-linux-gnueabihf",
-                 "--host=armv7l-cros-linux-gnueabihf",
-                 "--target=armv7l-cros-linux-gnueabihf",
-                 "--enable-checking=release",
-                 "--disable-multilib",
-                 "--enable-threads=posix",
-                 "--disable-bootstrap",
-                 "--disable-werror",
-                 "--disable-libmpx",
-                 "--enable-static",
-                 "--enable-shared",
-                 "--program-suffix=-#{version}",
-                 "--with-arch=armv7-a",
-                 "--with-tune=cortex-a15",
-                 "--with-fpu=neon",
-                 "--with-float=hard"
-        when 'x86_64'
-          system "../configure",
-                 "--prefix=#{CREW_PREFIX}",
-                 "--libdir=#{CREW_LIB_PREFIX}",
-                 "--build=#{ARCH}-cros-linux-gnu",
-                 "--host=#{ARCH}-cros-linux-gnu",
-                 "--target=#{ARCH}-cros-linux-gnu",
-                 "--enable-checking=release",
-                 "--disable-multilib",
-                 "--enable-threads=posix",
-                 "--disable-bootstrap",
-                 "--disable-werror",
-                 "--disable-libmpx",
-                 "--enable-static",
-                 "--enable-shared",
-                 "--program-suffix=-#{version}",
-                 "--with-arch-64=x86-64"
-        when 'i686'
-          system "../configure",
-                 "--prefix=#{CREW_PREFIX}",
-                 "--libdir=#{CREW_LIB_PREFIX}",
-                 "--build=#{ARCH}-cros-linux-gnu",
-                 "--host=#{ARCH}-cros-linux-gnu",
-                 "--target=#{ARCH}-cros-linux-gnu",
-                 "--enable-checking=release",
-                 "--disable-multilib",
-                 "--enable-threads=posix",
-                 "--disable-bootstrap",
-                 "--disable-werror",
-                 "--disable-libmpx",
-                 "--enable-static",
-                 "--enable-shared",
-                 "--program-suffix=-#{version}",
-                 "--with-arch-32=i686"
-      end
-      system 'make'
+    # Set ccache sloppiness as per
+    # https://wiki.archlinux.org/index.php/Ccache#Sloppiness
+    system 'ccache --set-config=sloppiness=file_macro,locale,time_macros'
+    # Prefix ccache to path.
+    @path = "#{CREW_LIB_PREFIX}/ccache/bin:#{CREW_PREFIX}/bin:/usr/bin:/bin"
+
+    # Install prereqs using the standard gcc method so they can be
+    # linked statically.
+    # system './contrib/download_prerequisites'
+
+    ## Install newer version of gmp
+    # gmp_url = "https://gmplib.org/download/gmp/gmp-#{@gmp_ver}.tar.lz"
+    # gmp_sha256 = '2c7f4f0d370801b2849c48c9ef3f59553b5f1d3791d070cffb04599f9fc67b41'
+    # system "curl -Ls #{gmp_url} | hashpipe sha256 #{gmp_sha256} | tar --lzip -x"
+    # system "ln -sf ../gmp-#{@gmp_ver} gmp"
+
+    ## Install newer version of isl
+    # isl_url = "http://isl.gforge.inria.fr/isl-#{@isl_ver}.tar.bz2"
+    # isl_sha256 = 'c58922c14ae7d0791a77932f377840890f19bc486b653fa64eba7f1026fb214d'
+    # system "curl -Ls #{isl_url} | hashpipe sha256 #{isl_sha256} | tar xj"
+    # system "ln -sf ../isl-#{@isl_ver} isl"
+
+    ## Install newer version of mpc
+    # mpc_url = "https://ftp.gnu.org/gnu/mpc/mpc-#{@mpc_ver}.tar.gz"
+    # mpc_sha256 = '17503d2c395dfcf106b622dc142683c1199431d095367c6aacba6eec30340459'
+    # system "curl -Ls #{mpc_url} | hashpipe sha256 #{mpc_sha256} | tar xz"
+    # system "ln -sf ../mpc-#{@mpc_ver} mpc"
+
+    ## Install newer version of mpfr
+    # mpfr_url = "https://www.mpfr.org/mpfr-current/mpfr-#{@mpfr_ver}.tar.xz"
+    # mpfr_sha256 = '0c98a3f1732ff6ca4ea690552079da9c597872d30e96ec28414ee23c95558a7f'
+    # system "curl -Ls #{mpfr_url} | hashpipe sha256 #{mpfr_sha256} | tar xJ"
+    # Dir.chdir "mpfr-#{@mpfr_ver}" do
+    #  system 'curl -Ls "https://gforge.inria.fr/scm/viewvc.php/mpfr/misc/www/mpfr-4.1.0/allpatches?revision=14491&view=co" | \
+    #    hashpipe sha256 dfa7d8a14ec7cb3b344cb81cfd7bd7e22aba62379941cc9110759f11172ac013 | patch -NZp1 --binary'
+    # end
+    # system "ln -sf ../mpfr-#{@mpfr_ver} mpfr"
+
+    FileUtils.mkdir_p 'objdir/gcc/.deps'
+
+    Dir.chdir('objdir') do
+      system "env NM=gcc-nm AR=gcc-ar RANLIB=gcc-ranlib \
+        CFLAGS='#{@cflags}' CXXFLAGS='#{@cxxflags}' \
+        LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        ../configure #{CREW_OPTIONS} \
+        #{@gcc_global_opts} \
+        #{@archflags} \
+        --enable-languages=#{@languages} \
+        --program-suffix=-#{@gcc_version}"
+      # LIBRARY_PATH=#{CREW_LIB_PREFIX} needed for x86_64 to avoid:
+      # /usr/local/bin/ld: cannot find crti.o: No such file or directory
+      # /usr/local/bin/ld: cannot find /usr/lib64/libc_nonshared.a
+      system "env PATH=#{@path} \
+        LIBRARY_PATH=#{CREW_LIB_PREFIX} \
+        make -j#{CREW_NPROC}"
     end
   end
 
   # preserve for check, skip check for current version
   def self.check
-    Dir.chdir("objdir") do
-      #system "make -k check -j#{CREW_NPROC}"
-      #system "../contrib/test_summary"
-    end
+    # Dir.chdir('objdir') do
+    #  system "make -k check -j#{CREW_NPROC} || true"
+    #  system '../contrib/test_summary'
+    # end
   end
 
   def self.install
-    Dir.chdir("objdir") do
-      system "make", "DESTDIR=#{CREW_DEST_DIR}", "install-strip"
+    gcc_arch = `objdir/gcc/xgcc -dumpmachine`.chomp
+    gcc_dir = "gcc/#{gcc_arch}/#{@gcc_version}"
+    gcc_libdir = "#{CREW_DEST_LIB_PREFIX}/#{gcc_dir}"
+    Dir.chdir('objdir') do
+      # gcc-libs install
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+          make -C #{CREW_TGT}/libgcc DESTDIR=#{CREW_DEST_DIR} install-shared"
 
-      gcc_arch = `gcc -dumpmachine`.chomp
-      gcc_dir = "gcc/#{gcc_arch}/#{version}"
-      gcc_libdir = "#{CREW_LIB_PREFIX}/#{gcc_dir}"
+      @gcc_libs = %w[libatomic libgfortran libgo libgomp libitm
+                     libquadmath libsanitizer/asan libsanitizer/lsan libsanitizer/ubsan
+                     libsanitizer/tsan libstdc++-v3/src libvtv]
+      @gcc_libs.each do |lib|
+        system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+          make -C #{CREW_TGT}/#{lib} \
+          DESTDIR=#{CREW_DEST_DIR} install-toolexeclibLTLIBRARIES || true"
+      end
+
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libobjc DESTDIR=#{CREW_DEST_DIR} install-libs || true"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libstdc++-v3/po DESTDIR=#{CREW_DEST_DIR} install || true"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libphobos DESTDIR=#{CREW_DEST_DIR} install || true"
+
+      @gcc_libs_info = %w[libgomp libitm libquadmath]
+      @gcc_libs_info.each do |lib|
+        system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+          make -C #{CREW_TGT}/#{lib} DESTDIR=#{CREW_DEST_DIR} install-info || true"
+      end
+
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+          make DESTDIR=#{CREW_DEST_DIR} install-strip"
+
+      # gcc-non-lib install
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C gcc DESTDIR=#{CREW_DEST_DIR} install-driver install-cpp install-gcc-ar \
+        c++.install-common install-headers install-plugin install-lto-wrapper"
+
+      @gcov_install = %w[gcov gcov-tool]
+      @gcov_install.each do |gcov_bin|
+        FileUtils.install "gcc/#{gcov_bin}", "#{CREW_DEST_PREFIX}/bin/#{gcov_bin}-#{@gcc_version}", mode: 0o755
+      end
+
+      FileUtils.mkdir_p gcc_libdir
+      @gcc_libdir_install = %w[cc1 cc1plus collect2 lto1]
+      @gcc_libdir_install.each do |lib|
+        FileUtils.install "gcc/#{lib}", "#{gcc_libdir}/", mode: 0o755
+      end
+
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libgcc DESTDIR=#{CREW_DEST_DIR} install"
+
+      @libstdc_install = %w[src include libsupc++]
+      @libstdc_install.each do |lib|
+        system "env LD_LIBRARY_PATH=#{CREW_LIB_PREFIX} \
+      LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+      make -C #{CREW_TGT}/libstdc++-v3/#{lib} DESTDIR=#{CREW_DEST_DIR} install"
+      end
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libstdc++-v3/python DESTDIR=#{CREW_DEST_DIR} install"
+
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make DESTDIR=#{CREW_DEST_DIR} install-libcc1"
 
       # http://www.linuxfromscratch.org/lfs/view/development/chapter06/gcc.html#contents-gcc
       # move a misplaced file
-      # The installation stage puts some files used by gdb under the /usr/local/lib(64) directory. This generates spurious error messages when performing ldconfig. This command moves the files to another location.
-      system "mkdir -pv #{CREW_DEST_PREFIX}/share/gdb/auto-load/usr/lib"
-      system "mv -v #{CREW_DEST_LIB_PREFIX}/*gdb.py #{CREW_DEST_PREFIX}/share/gdb/auto-load/usr/lib"
+      # The installation stage puts some files used by gdb under the /usr/local/lib(64) directory.
+      # This generates spurious error messages when performing ldconfig. This command moves the files to another location.
+      FileUtils.mkdir_p "#{CREW_DEST_PREFIX}/share/gdb/auto-load/usr/lib"
+      FileUtils.mv Dir.glob("#{CREW_DEST_LIB_PREFIX}/*gdb.py"),
+                   "#{CREW_DEST_PREFIX}/share/gdb/auto-load/usr/lib/"
 
-      # Install Binary File Descriptor library (BFD)
-      system "install -v -dm755 #{CREW_DEST_LIB_PREFIX}/bfd-plugins"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make DESTDIR=#{CREW_DEST_DIR} install-fixincludes"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C gcc DESTDIR=#{CREW_DEST_DIR} install-mkheaders"
 
-      # Add a compatibility symlink to enable building programs with Link Time Optimization (LTO)
-      system "ln -sfv #{CREW_PREFIX}/libexec/#{gcc_dir}/liblto_plugin.so #{CREW_DEST_LIB_PREFIX}/bfd-plugins/"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C lto-plugin DESTDIR=#{CREW_DEST_DIR} install"
 
-      # Make symbolic links
-      Dir.chdir "#{CREW_DEST_LIB_PREFIX}/#{gcc_dir}" do
-        system "find . -type f -maxdepth 1 -exec ln -sv #{gcc_libdir}/{} #{CREW_DEST_LIB_PREFIX}/{} \\;"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libgomp DESTDIR=#{CREW_DEST_DIR} install-nodist_libsubincludeHEADERS || true"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libgomp DESTDIR=#{CREW_DEST_DIR} install-nodist_toolexeclibHEADERS || true"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libitm DESTDIR=#{CREW_DEST_DIR} install-nodist_toolexeclibHEADERS || true"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libquadmath DESTDIR=#{CREW_DEST_DIR} install-nodist_libsubincludeHEADERS || true"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libsanitizer DESTDIR=#{CREW_DEST_DIR} install-nodist_sanincludeHEADERS || true"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libsanitizer DESTDIR=#{CREW_DEST_DIR} install-nodist_toolexeclibHEADERS || true"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libsanitizer/asan DESTDIR=#{CREW_DEST_DIR} install-nodist_toolexeclibHEADERS || true"
+      # This failed on i686
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libsanitizer/tsan DESTDIR=#{CREW_DEST_DIR} install-nodist_toolexeclibHEADERS || true"
+      # This might fail on i686
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libsanitizer/lsan DESTDIR=#{CREW_DEST_DIR} install-nodist_toolexeclibHEADERS || true"
+
+      # libiberty is installed from binutils
+      # system "env LD_LIBRARY_PATH=#{CREW_LIB_PREFIX} \
+      #      LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+      #      make -C libiberty DESTDIR=#{CREW_DEST_DIR} install"
+      # install -m644 libiberty/pic/libiberty.a "#{CREW_DEST_PREFIX}/lib"
+
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C gcc DESTDIR=#{CREW_DEST_DIR} install-man install-info"
+
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C libcpp DESTDIR=#{CREW_DEST_DIR} install"
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C gcc DESTDIR=#{CREW_DEST_DIR} install-po"
+
+      # install the libstdc++ man pages
+      system "env LIBRARY_PATH=#{CREW_LIB_PREFIX} PATH=#{@path} \
+        make -C #{CREW_TGT}/libstdc++-v3/doc DESTDIR=#{CREW_DEST_DIR} doc-install-man"
+
+      # byte-compile python libraries
+      system "python -m compileall #{CREW_DEST_PREFIX}/share/gcc-#{@gcc_version}/"
+      system "python -O -m compileall #{CREW_DEST_PREFIX}/share/gcc-#{@gcc_version}"
+    end
+
+    Dir.chdir "#{CREW_DEST_MAN_PREFIX}/man1" do
+      Dir.glob("*-#{@gcc_version}.1*").each do |f|
+        @basefile = f.gsub("-#{@gcc_version}", '')
+        FileUtils.ln_sf f, @basefile
       end
+    end
 
-      system "ln -sv #{CREW_PREFIX}/bin/gcc-#{version} #{CREW_DEST_PREFIX}/bin/cc"
-      system "ln -sv #{CREW_PREFIX}/bin/gcc-#{version} #{CREW_DEST_PREFIX}/bin/gcc"
-      system "ln -sv #{CREW_PREFIX}/bin/c++-#{version} #{CREW_DEST_PREFIX}/bin/c++"
-      system "ln -sv #{CREW_PREFIX}/bin/g++-#{version} #{CREW_DEST_PREFIX}/bin/g++"
-      system "ln -sv #{CREW_PREFIX}/bin/cpp-#{version} #{CREW_DEST_PREFIX}/bin/cpp"
-      system "ln -sv #{CREW_PREFIX}/bin/gcc-ar-#{version} #{CREW_DEST_PREFIX}/bin/gcc-ar"
-      system "ln -sv #{CREW_PREFIX}/bin/gcc-nm-#{version} #{CREW_DEST_PREFIX}/bin/gcc-nm"
-      system "ln -sv #{CREW_PREFIX}/bin/gcc-ranlib-#{version} #{CREW_DEST_PREFIX}/bin/gcc-ranlib"
-      system "ln -sv #{CREW_PREFIX}/bin/gcov-#{version} #{CREW_DEST_PREFIX}/bin/gcov"
-      system "ln -sv #{CREW_PREFIX}/bin/gcov-dump-#{version} #{CREW_DEST_PREFIX}/bin/gcov-dump"
-      system "ln -sv #{CREW_PREFIX}/bin/gcov-tool-#{version} #{CREW_DEST_PREFIX}/bin/gcov-tool"
-      system "ln -sv #{CREW_PREFIX}/bin/gfortran-#{version} #{CREW_DEST_PREFIX}/bin/gfortran"
-
-      system "ln -sv #{CREW_PREFIX}/bin/#{gcc_arch}-c++-#{version} #{CREW_DEST_PREFIX}/bin/#{gcc_arch}-c++"
-      system "ln -sv #{CREW_PREFIX}/bin/#{gcc_arch}-g++-#{version} #{CREW_DEST_PREFIX}/bin/#{gcc_arch}-g++"
-      system "ln -sv #{CREW_PREFIX}/bin/#{gcc_arch}-gcc-#{version} #{CREW_DEST_PREFIX}/bin/#{gcc_arch}-gcc"
-      system "ln -sv #{CREW_PREFIX}/bin/#{gcc_arch}-gcc-ar-#{version} #{CREW_DEST_PREFIX}/bin/#{gcc_arch}-gcc-ar"
-      system "ln -sv #{CREW_PREFIX}/bin/#{gcc_arch}-gcc-nm-#{version} #{CREW_DEST_PREFIX}/bin/#{gcc_arch}-gcc-nm"
-      system "ln -sv #{CREW_PREFIX}/bin/#{gcc_arch}-gcc-ranlib-#{version} #{CREW_DEST_PREFIX}/bin/#{gcc_arch}-gcc-ranlib"
-      system "ln -sv #{CREW_PREFIX}/bin/#{gcc_arch}-gfortran-#{version} #{CREW_DEST_PREFIX}/bin/#{gcc_arch}-gfortran"
-
-      system "ln -sv #{CREW_PREFIX}/share/man/man1/cpp-#{version}.1.gz #{CREW_DEST_PREFIX}/share/man/man1/cpp.1.gz"
-      system "ln -sv #{CREW_PREFIX}/share/man/man1/g++-#{version}.1.gz #{CREW_DEST_PREFIX}/share/man/man1/g++.1.gz"
-      system "ln -sv #{CREW_PREFIX}/share/man/man1/gcc-#{version}.1.gz #{CREW_DEST_PREFIX}/share/man/man1/gcc.1.gz"
-      system "ln -sv #{CREW_PREFIX}/share/man/man1/gcov-#{version}.1.gz #{CREW_DEST_PREFIX}/share/man/man1/gcov.1.gz"
-      system "ln -sv #{CREW_PREFIX}/share/man/man1/gcov-dump-#{version}.1.gz #{CREW_DEST_PREFIX}/share/man/man1/gcov-dump.1.gz"
-      system "ln -sv #{CREW_PREFIX}/share/man/man1/gcov-tool-#{version}.1.gz #{CREW_DEST_PREFIX}/share/man/man1/gcov-tool.1.gz"
-      system "ln -sv #{CREW_PREFIX}/share/man/man1/gfortran-#{version}.1.gz #{CREW_DEST_PREFIX}/share/man/man1/gfortran.1.gz"
+    Dir.chdir "#{CREW_DEST_PREFIX}/bin/" do
+      Dir.glob("#{gcc_arch}-*-#{@gcc_version}").each do |f|
+        @basefile_nover = f.split(/-#{@gcc_version}/, 2).first
+        puts "Symlinking #{f} to #{@basefile_nover}"
+        FileUtils.ln_sf f, @basefile_nover
+        @basefile_noarch = f.split(/#{gcc_arch}-/, 2).last
+        puts "Symlinking #{f} to #{@basefile_noarch}"
+        FileUtils.ln_sf f, @basefile_noarch
+        @basefile_noarch_nover = @basefile_nover.split(/#{gcc_arch}-/, 2).last
+        puts "Symlinking #{f} to #{@basefile_noarch_nover}"
+        FileUtils.ln_sf f, @basefile_noarch_nover
+        @basefile_noarch_nover_nogcc = @basefile_noarch_nover.split(/gcc-/, 2).last
+        puts "Symlinking #{f} to #{gcc_arch}-#{@basefile_noarch_nover_nogcc}"
+        FileUtils.ln_sf f, "#{gcc_arch}-#{@basefile_noarch_nover_nogcc}"
+      end
+      Dir.glob("*-#{@gcc_version}").each do |f|
+        @basefile_nover = f.split(/-#{@gcc_version}/, 2).first
+        puts "Symlinking #{f} to #{@basefile_nover}"
+        FileUtils.ln_sf f, @basefile_nover
+      end
+      # many packages expect this symlink
+      puts "Symlinking gcc-#{@gcc_version} to cc"
+      FileUtils.ln_sf "gcc-#{@gcc_version}", 'cc'
+    end
+    # libgomp.so conflicts with llvm
+    @deletefiles = %W[#{CREW_DEST_LIB_PREFIX}/libgomp.so]
+    @deletefiles.each do |f|
+      FileUtils.rm f if File.exist?(f)
+    end
+    # make sure current version of gcc LTO plugin for Gold linker is installed.
+    FileUtils.mkdir_p "#{CREW_DEST_LIB_PREFIX}/bfd-plugins/"
+    puts "Symlinking #{CREW_PREFIX}/libexec/#{gcc_dir}/liblto_plugin.so to #{CREW_DEST_LIB_PREFIX}/bfd-plugins/"
+    FileUtils.ln_sf "#{CREW_PREFIX}/libexec/#{gcc_dir}/liblto_plugin.so", "#{CREW_DEST_LIB_PREFIX}/bfd-plugins/"
+    # binutils makes a symlink here, but just in case it isn't there.
+    if ARCH == 'x86_64'
+      FileUtils.mkdir_p "#{CREW_DEST_PREFIX}/lib/bfd-plugins/"
+      puts "Symlinking #{CREW_PREFIX}/libexec/#{gcc_dir}/liblto_plugin.so to #{CREW_DEST_PREFIX}/lib/bfd-plugins/"
+      FileUtils.ln_sf "#{CREW_PREFIX}/libexec/#{gcc_dir}/liblto_plugin.so", "#{CREW_DEST_PREFIX}/lib/bfd-plugins/"
     end
   end
 end
