@@ -131,5 +131,5 @@ Latest Packages
 License
 -------
 
-Copyright &copy; 2021 Zachary Rude.
+Copyright &copy; 2021 Zach, Inc.
 This project, including all of its source files, is released under the terms of [GNU General Public License (version 3 or later)](http://www.gnu.org/licenses/gpl.txt).
