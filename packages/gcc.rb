@@ -89,7 +89,7 @@ class Gcc < Package
              installed_gccver.partition('.')[0].to_s == @gcc_version.partition('.')[0].to_s
         $stderr.puts "GCC version #{installed_gccver} is currently installed.".lightred
         $stderr.puts "To use #{self.to_s.downcase} please run:".lightgreen
-        $stderr.puts "crew remove gcc#{installed_gccver} && crew install #{self.to_s.downcase}".lightgreen
+        $stderr.puts "crpkg remove gcc#{installed_gccver} && crpkginstall #{self.to_s.downcase}".lightgreen
         exit 1
       end
     end
