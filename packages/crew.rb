@@ -3,7 +3,7 @@ require 'package'
 class Crew < Package                 # The first character of the class name must be upper case
   description 'Chromebrew is a package manager for Chromebooks.'
   homepage 'https://github.com/skycocker/chromebrew'
-  version '1.18.2'
+  version 'latest'
   license 'GPL-3' # license of source
   compatibility 'all'
   source_url 'https://github.com/skycocker/chromebrew/blob/master/bin/crew'
