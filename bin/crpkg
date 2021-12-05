@@ -473,7 +473,7 @@ def files (pkgName)
     puts "Total found: #{lines}".lightgreen
     puts "Disk usage: #{humansize}".lightgreen
   else
-    puts "crpkg: #{pkgName} :package not installed".lightred
+    puts "crpkg: #{pkgName}: package not installed".lightred
   end
 end
 
@@ -643,7 +643,7 @@ def download
           puts 'Cannot find cached archive. Will download.'.lightred
           cachefile = ''
         else
-          puts "#{@pkg.name.capitalize} archive file exists in cache".lightgreen if @opt_verbose
+          puts "#{@pkg.name} archive file exists in cache".lightgreen if @opt_verbose
           if Digest::SHA256.hexdigest( File.read(cachefile) ) == sha256sum || sha256sum =~ /^SKIP$/i
             begin
               # Hard link cached file if possible.
@@ -664,7 +664,7 @@ def download
       end
       # Download file if not cached.
       system "#{CURL} --retry 3 -#{@verbose}#LC - --insecure \'#{url}\' --output #{filename}"
-      abort 'Checksum mismatch. Try again.'.lightred unless
+      abort 'crpkg: Checksum mismatch. Try again.'.lightred unless
         Digest::SHA256.hexdigest( File.read(filename) ) == sha256sum || sha256sum =~ /^SKIP$/i
       puts "#{@pkg.name.capitalize} archive downloaded.".lightgreen
       # Stow file in cache if requested, if file is not from cache,
@@ -1067,7 +1067,7 @@ def resolve_dependencies_and_install
       FileUtils.mkdir_p "#{CREW_BREW_DIR}/dest" # this is a little ugly, feel free to find a better way
     end
   end
-  puts "#{@pkg.name.capitalize} installed!".lightgreen
+  puts "crpkg: success: #{@pkg.name}: package successfully installed installed".lightgreen
   @resolve_dependencies_and_install = 0
 end
 
@@ -1176,7 +1176,7 @@ end
 
 def install
   if !@pkg.in_upgrade && @device[:installed_packages].any? { |pkg| pkg[:name] == @pkg.name }
-    puts "Package #{@pkg.name} already installed, skipping...".lightgreen
+    puts "crpkg: info: Package #{@pkg.name} already installed, skipping...".lightgreen
     return
   end
 
@@ -1246,7 +1246,7 @@ def resolve_dependencies_and_build
     search origin, true
     build_package Dir.pwd
   rescue InstallError => e
-    abort "#{@pkg.name} failed to build: #{e.to_s}".lightred
+    abort "crpkg: #{@pkg.name}: error: package failed to build: #{e.to_s}".lightred
   ensure
     #cleanup
     unless @opt_keep
@@ -1259,8 +1259,8 @@ def resolve_dependencies_and_build
 end
 
 def build_package(pwd)
-  abort 'It is not possible to build a fake package'.lightred if @pkg.is_fake?
-  abort 'It is not possible to build without source'.lightred if !@pkg.is_source?(@device[:architecture])
+  abort 'crpkg: error: Not possible to build a fake package'.lightred if @pkg.is_fake?
+  abort 'crpkg: error: Not possible to build without source'.lightred if !@pkg.is_source?(@device[:architecture])
 
   # download source codes and unpack it
   meta = download
@@ -1355,7 +1355,7 @@ def remove(pkgName)
   search pkgName, true
   @pkg.remove
 
-  puts "#{pkgName.capitalize} removed!".lightgreen
+  puts "crpkg: #{pkgName}: success: package removed".lightgreen
 end
 
 def build_command(args)
