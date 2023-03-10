@@ -1,6 +1,6 @@
 # Defines common constants used in different parts of crpkg
 
-CREW_VERSION = '1.18.2'
+CREW_VERSION = '1.19.0'
 
 ARCH_ACTUAL = `uname -m`.strip
 # This helps with virtualized builds on aarch64 machines
