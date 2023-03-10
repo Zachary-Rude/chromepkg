@@ -48,7 +48,7 @@ version #{CREW_VERSION}
 DOCOPT
 
 CREW_LICENSE = <<~LICENSESTRING
-  Copyright (C) 2021 Zach, Inc.
+  Copyright (C) 2021-2023 Zach, Inc.
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -140,14 +140,14 @@ def print_current_package(extra = false)
   status = 'incompatible' unless @device[:compatible_packages].any? do |elem| elem[:name] == @pkg.name end
   case status
   when 'installed'
-    puts "Name: #{@pkg.name}".lightgreen
+    puts "Name: #{@pkg.name}".lightgreen if @opt_verbose
   when 'incompatible'
-    puts "Name: #{@pkg.name}".lightred
+    puts "Name: #{@pkg.name}".lightred if @opt_verbose
   else
-    puts "Name: #{@pkg.name}".lightblue
+    puts "Name: #{@pkg.name}".lightblue if @opt_verbose
   end
-  print "Description: #{@pkg.description}".lightblue if @pkg.description
-  if extra
+  print "Description: #{@pkg.description}".lightblue if @pkg.description and @opt_verbose
+  if extra and @opt_verbose
     puts ""
     puts "Homepage: #{@pkg.homepage}" if @pkg.homepage
     puts "Version: #{@pkg.version}"
