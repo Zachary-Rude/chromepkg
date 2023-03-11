@@ -34,9 +34,6 @@ class Gcc < Package
   depends_on 'zlibpkg' # R
   depends_on 'zstd' # R
 
-  no_patchelf
-  no_zstd if ARCH == 'i686'
-
   @gcc_version = version.split('-')[0].partition('.')[0]
 
   def self.patch
